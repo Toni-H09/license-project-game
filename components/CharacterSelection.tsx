@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Character } from '@/data/gameData';
 import { User, Check } from 'lucide-react-native';
+import { Character } from '@/data/gameData';
+import React, { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 
 interface CharacterSelectionProps {
   characters: Character[];
@@ -79,9 +79,10 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
       </View>
 
       <View style={styles.nameInputContainer}>
-        <Text style={styles.nameInputLabel}>
-          <User size={16} color="#FFFFFF" /> Introdu-ți numele:
-        </Text>
+        <View style={styles.nameInputLabelRow}>
+          <User size={16} color="#FFFFFF" />
+          <Text style={styles.nameInputLabel}>Introdu-ți numele:</Text>
+        </View>
         <TextInput
           style={styles.nameInput}
           value={name}
@@ -125,140 +126,147 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 60,
+    padding: 24,
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 12,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#CBD5E1',
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    marginBottom: 40,
+    lineHeight: 26,
+    paddingHorizontal: 20,
   },
   charactersContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    gap: 16,
+    justifyContent: 'space-around',
+    marginBottom: 40,
+    paddingHorizontal: 5,
   },
   characterCard: {
-    flex: 1,
-    borderRadius: 16,
+    width: 600,
+    height: 300,
+    borderRadius: 20,
     overflow: 'hidden',
-    elevation: 5,
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
   selectedCharacterCard: {
-    transform: [{ scale: 1.05 }],
-    elevation: 8,
-    shadowOpacity: 0.4,
+    transform: [{ scale: 1.08 }],
   },
   characterGradient: {
-    padding: 20,
+    flex: 1,
+    padding: 25,
     alignItems: 'center',
-    minHeight: 160,
     justifyContent: 'center',
     position: 'relative',
   },
   avatar: {
-    fontSize: 96,
-    marginBottom: 16,
+    fontSize: 100,
+    marginBottom: 20,
   },
   characterDescription: {
-    fontSize: 14,
-    color: '#F1F5F9',
+    color: '#FFFFFF',
+    fontSize: 17,
     textAlign: 'center',
-    lineHeight: 20,
+    fontWeight: '600',
+    lineHeight: 24,
   },
   selectedIndicator: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 15,
-    padding: 5,
+    top: 15,
+    right: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 20,
+    padding: 8,
   },
   nameInputContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#475569',
+    marginBottom: 40,
+    paddingHorizontal: 10,
   },
-  nameInputLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 12,
+  nameInputLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+  nameInputLabel: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginLeft: 10,
   },
   nameInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: '#64748B',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
+    borderRadius: 15,
+    padding: 18,
+    fontSize: 18,
     color: '#FFFFFF',
-    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    textAlign: 'center',
+    fontWeight: '500',
   },
   nameHint: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#94A3B8',
+    textAlign: 'center',
+    marginTop: 12,
     fontStyle: 'italic',
+    lineHeight: 20,
   },
   confirmButton: {
-    marginBottom: 24,
-    borderRadius: 25,
+    borderRadius: 15,
     overflow: 'hidden',
-    elevation: 3,
+    marginBottom: 30,
+    marginHorizontal: 10,
+    elevation: 6,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 3,
     },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
   },
   confirmGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    gap: 8,
+    padding: 18,
   },
   confirmButtonText: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    marginLeft: 10,
   },
   infoBox: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    padding: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3B82F6',
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    borderRadius: 15,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    marginHorizontal: 10,
   },
   infoText: {
-    fontSize: 14,
     color: '#93C5FD',
-    lineHeight: 20,
+    fontSize: 16,
     textAlign: 'center',
+    lineHeight: 24,
+    fontWeight: '500',
   },
 });

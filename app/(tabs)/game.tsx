@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { gameData, GameState, Choice, characters, Character } from '@/data/gameData';
+import { gameData, storyGraph, GameState, Choice, characters, Character } from '@/data/gameData';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import ProgressBar from '@/components/ProgressBar';
 import StoryDisplay from '@/components/StoryDisplay';
@@ -11,6 +11,8 @@ import AnimatedCharacter from '@/components/AnimatedCharacter';
 import ChoiceButton from '@/components/ChoiceButton';
 import CharacterSelection from '@/components/CharacterSelection';
 import SceneBackground from '@/components/SceneBackground';
+import { GameStateMachine } from '@/utils/gameStateMachine';
+import { StoryGraphManager } from '@/utils/storyGraphManager';
 
 const initialGameState: GameState = {
   currentScene: 0,
@@ -21,6 +23,7 @@ const initialGameState: GameState = {
   introspectionMode: false,
   selectedCharacter: undefined,
   characterSelected: false,
+  activeRelationships: [],
 };
 
 // Flag global pentru resetare
@@ -32,6 +35,9 @@ export function triggerGameReset() {
 
 export default function GameScreen() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const [stateMachine] = useState(new GameStateMachine());
+  const [storyManager] = useState(new StoryGraphManager(storyGraph));
+  const [currentPsychologicalState, setCurrentPsychologicalState] = useState('neutral');
   const [isGameComplete, setIsGameComplete] = useState(false);
 
   // Verifică dacă trebuie să reseteze jocul
@@ -44,6 +50,13 @@ export default function GameScreen() {
     }
   }, []);
 
+  // Add this for debugging the graph structure
+  useEffect(() => {
+    if (__DEV__) {
+      storyManager.printGraphStructure();
+    }
+  }, [storyManager]);
+
   const handleCharacterSelection = (character: Character) => {
     setGameState({
       ...gameState,
@@ -55,9 +68,59 @@ export default function GameScreen() {
   const currentScene = gameData.scenes[gameState.currentScene];
   const currentStep = currentScene?.steps[gameState.currentStep];
 
+  const getFilteredChoices = (step: any): Choice[] => {
+    if (!step) return [];
+    
+    const currentNodeId = step.id;
+    
+    // For the first question of each scene, show all choices (should be 3)
+    const isFirstQuestion = gameState.currentStep === 0;
+    
+    if (isFirstQuestion) {
+      console.log('=== FIRST QUESTION - SHOWING ALL CHOICES ===');
+      console.log('Available choices:', step.choices.map((c: Choice) => c.id));
+      return step.choices;
+    }
+    
+    // For subsequent questions, apply blocking logic
+    const availableEdges = storyManager.getAvailableEdgesFromNode(currentNodeId);
+    const availableChoices = availableEdges.map(edge => edge.choice);
+    
+    console.log('=== CHOICE FILTERING DEBUG ===');
+    console.log('Current node:', currentNodeId);
+    console.log('Total choices in step:', step.choices.length);
+    console.log('All edges from node:', storyManager.getAllEdgesFromNode(currentNodeId).map(e => e.id));
+    console.log('Available edges:', availableEdges.map(e => e.id));
+    console.log('Available choices:', availableChoices.map(c => c.id));
+    console.log('Blocked choices:', storyManager.getBlockedChoices());
+    console.log('Expected: 3 available out of 5 total');
+    console.log('=== END DEBUGGING ===');
+    
+    // Should always return exactly 3 choices (5 total - 2 blocked = 3 available)
+    return availableChoices;
+  };
+
   const handleChoice = (choice: Choice) => {
-    const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + choice.personalStateChange));
-    const newSocialRelations = Math.max(0, Math.min(100, gameState.socialRelations + choice.socialRelationsChange));
+    // Process choice through state machine
+    const { newState, modifiedChoice } = stateMachine.processChoice(gameState, choice);
+    setCurrentPsychologicalState(newState);
+
+    // Block future choices based on this edge
+    storyManager.blockChoicesFromDecision(choice.id);
+    
+    // Optional: Get the destination node (though we use sequential progression)
+    const destinationNode = storyManager.navigateViaEdge(choice.id);
+    console.log(`Choice ${choice.id} leads to node: ${destinationNode}`);
+
+    // Apply state changes
+    const personalStateChange = modifiedChoice.personalStateChange + 
+      (currentPsychologicalState === 'confident' ? 5 : 0) +
+      (currentPsychologicalState === 'isolated' ? -3 : 0);
+
+    const socialRelationsChange = modifiedChoice.socialRelationsChange;
+
+    const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + personalStateChange));
+    const newSocialRelations = Math.max(0, Math.min(100, gameState.socialRelations + socialRelationsChange));
 
     const newDecisions = [...gameState.decisions, choice.id];
 
@@ -72,6 +135,7 @@ export default function GameScreen() {
         introspectionMode: true,
       });
     } else {
+      // Sequential progression (same as before)
       setGameState({
         ...gameState,
         currentStep: gameState.currentStep + 1,
@@ -114,12 +178,13 @@ export default function GameScreen() {
             console.log('Resetare începută...');
             setIsGameComplete(false);
             setGameState(initialGameState);
+            storyManager.resetBlockedChoices(); // Reset blocked choices
             console.log('Resetare completă!');
           }
         },
       ]
     );
-  }, []);
+  }, [storyManager]);
 
   const getEnding = () => {
     const avgState = (gameState.personalState + gameState.socialRelations) / 2;
@@ -178,6 +243,7 @@ export default function GameScreen() {
               console.log('Reset button pressed directly!');
               setIsGameComplete(false);
               setGameState(initialGameState);
+              storyManager.resetBlockedChoices(); // Reset blocked choices
             }}
           >
             <LinearGradient
@@ -285,7 +351,7 @@ export default function GameScreen() {
             />
 
             <View style={styles.choicesContainer}>
-              {currentStep.choices.map((choice, index) => (
+              {getFilteredChoices(currentStep).map((choice, index) => (
                 <ChoiceButton
                   key={index}
                   choice={choice}
