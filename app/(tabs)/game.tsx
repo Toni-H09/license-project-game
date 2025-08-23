@@ -1,16 +1,19 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { gameData, GameState, Choice, characters, Character } from '@/data/gameData';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import ProgressBar from '@/components/ProgressBar';
-import StoryDisplay from '@/components/StoryDisplay';
-import { Heart, Users, RotateCcw } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import AnimatedCharacter from '@/components/AnimatedCharacter';
-import ChoiceButton from '@/components/ChoiceButton';
 import CharacterSelection from '@/components/CharacterSelection';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Heart, Users, RotateCcw, BarChart2 } from 'lucide-react-native';
+import { StoryGraphManager } from '@/utils/storyGraphManager';
+import React, { useState, useCallback, useEffect } from 'react';
+import StoryDisplay from '@/components/StoryDisplay';
+import { trackChoice, trackGameCompletion, trackGameStart, getMetrics, LocalMetrics, trackCharacterSelection } from '@/utils/localMetrics';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import AnimatedCharacter from '@/components/AnimatedCharacter';
+import ProgressBar from '@/components/ProgressBar';
+import { GameStateMachine } from '@/utils/gameStateMachine';
+import { router } from 'expo-router';
+import { gameData, storyGraph, GameState, Choice, characters, Character } from '@/data/gameData';
 import SceneBackground from '@/components/SceneBackground';
+import ChoiceButton from '@/components/ChoiceButton';
 
 const initialGameState: GameState = {
   currentScene: 0,
@@ -32,32 +35,81 @@ export function triggerGameReset() {
 
 export default function GameScreen() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const [stateMachine] = useState(new GameStateMachine());
+  const [storyManager] = useState(new StoryGraphManager(storyGraph));
+  const [currentPsychologicalState, setCurrentPsychologicalState] = useState('neutral');
   const [isGameComplete, setIsGameComplete] = useState(false);
+  const [localMetrics, setLocalMetrics] = useState<LocalMetrics | null>(null);
+  const [hasTrackedCompletion, setHasTrackedCompletion] = useState(false);
 
-  // Verifică dacă trebuie să reseteze jocul
   useEffect(() => {
     if (shouldResetGame) {
-      console.log('Resetting game due to global flag');
       setGameState(initialGameState);
       setIsGameComplete(false);
       shouldResetGame = false;
     }
   }, []);
 
-  const handleCharacterSelection = (character: Character) => {
-    setGameState({
-      ...gameState,
-      selectedCharacter: character,
-      characterSelected: true,
-    });
+  useEffect(() => {
+    if (isGameComplete) {
+      const loadMetrics = async () => {
+        const metrics = await getMetrics();
+        setLocalMetrics(metrics);
+      };
+      loadMetrics();
+    }
+  }, [isGameComplete]);
+
+  const handleCharacterSelection = async (character: Character) => {
+    try {
+      await trackGameStart();
+      await trackCharacterSelection(character.gender);
+      
+      setGameState({
+        ...gameState,
+        selectedCharacter: character,
+        characterSelected: true,
+      });
+    } catch (error) {
+      console.error('Error in handleCharacterSelection:', error);
+    }
   };
 
   const currentScene = gameData.scenes[gameState.currentScene];
   const currentStep = currentScene?.steps[gameState.currentStep];
 
+  const getFilteredChoices = (step: any): Choice[] => {
+    if (!step) return [];
+    
+    const currentNodeId = step.id;
+    const isFirstQuestion = gameState.currentStep === 0;
+    
+    if (isFirstQuestion) {
+      return step.choices;
+    }
+    
+    const availableEdges = storyManager.getAvailableEdgesFromNode(currentNodeId);
+    const availableChoices = availableEdges.map(edge => edge.choice);
+    
+    return availableChoices;
+  };
+
   const handleChoice = (choice: Choice) => {
-    const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + choice.personalStateChange));
-    const newSocialRelations = Math.max(0, Math.min(100, gameState.socialRelations + choice.socialRelationsChange));
+    trackChoice(choice.id);
+    const { newState, modifiedChoice } = stateMachine.processChoice(gameState, choice);
+    setCurrentPsychologicalState(newState);
+
+    storyManager.blockChoicesFromDecision(choice.id);
+    storyManager.navigateViaEdge(choice.id);
+
+    const personalStateChange = modifiedChoice.personalStateChange + 
+      (currentPsychologicalState === 'confident' ? 5 : 0) +
+      (currentPsychologicalState === 'isolated' ? -3 : 0);
+
+    const socialRelationsChange = modifiedChoice.socialRelationsChange;
+
+    const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + personalStateChange));
+    const newSocialRelations = Math.max(0, Math.min(100, gameState.socialRelations + socialRelationsChange));
 
     const newDecisions = [...gameState.decisions, choice.id];
 
@@ -82,15 +134,39 @@ export default function GameScreen() {
     }
   };
 
-  const handleIntrospection = (isPositive: boolean) => {
+  const resetGame = useCallback(() => {
+    setIsGameComplete(false);
+    setGameState(initialGameState);
+    setHasTrackedCompletion(false);
+    storyManager.resetBlockedChoices();
+  }, [storyManager]);
+
+  const handleIntrospection = async (isPositive: boolean) => {
     const stateChange = isPositive ? 10 : -10;
     const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + stateChange));
 
     const nextScene = gameState.currentScene + 1;
     
-    if (nextScene >= gameData.scenes.length) {
+    if (nextScene >= gameData.scenes.length && !hasTrackedCompletion) {
+      const finalGameState = { ...gameState, personalState: newPersonalState };
+      const avgState = (finalGameState.personalState + finalGameState.socialRelations) / 2;
+      
+      setHasTrackedCompletion(true);
+      
+      try {
+        if (avgState >= 70) {
+          await trackGameCompletion('positive');
+        } else if (avgState >= 40) {
+          await trackGameCompletion('neutral');
+        } else {
+          await trackGameCompletion('negative');
+        }
+      } catch (error) {
+        console.error('Error tracking game completion:', error);
+      }
+
       setIsGameComplete(true);
-    } else {
+    } else if (nextScene < gameData.scenes.length) {
       setGameState({
         ...gameState,
         currentScene: nextScene,
@@ -101,39 +177,18 @@ export default function GameScreen() {
     }
   };
 
-  const resetGame = useCallback(() => {
-    Alert.alert(
-      'Resetează Jocul',
-      'Ești sigur că vrei să reîncepi povestea?',
-      [
-        { text: 'Anulează', style: 'cancel' },
-        { 
-          text: 'Resetează', 
-          style: 'destructive',
-          onPress: () => {
-            console.log('Resetare începută...');
-            setIsGameComplete(false);
-            setGameState(initialGameState);
-            console.log('Resetare completă!');
-          }
-        },
-      ]
-    );
-  }, []);
-
   const getEnding = () => {
     const avgState = (gameState.personalState + gameState.socialRelations) / 2;
     
     if (avgState >= 70) {
-      return gameData.endings.positive;
+      return { type: 'positive', data: gameData.endings.positive };
     } else if (avgState >= 40) {
-      return gameData.endings.neutral;
+      return { type: 'neutral', data: gameData.endings.neutral };
     } else {
-      return gameData.endings.negative;
+      return { type: 'negative', data: gameData.endings.negative };
     }
   };
 
-  // Afișează selecția de caracter dacă nu a fost selectat încă
   if (!gameState.characterSelected) {
     return (
       <SceneBackground sceneIndex={-1}>
@@ -157,8 +212,8 @@ export default function GameScreen() {
             <Text style={styles.characterName}>{gameState.selectedCharacter?.name}</Text>
           </View>
           
-          <Text style={styles.endingTitle}>{ending.title}</Text>
-          <Text style={styles.endingText}>{ending.text}</Text>
+          <Text style={styles.endingTitle}>{ending.data.title}</Text>
+          <Text style={styles.endingText}>{ending.data.text}</Text>
           
           <View style={styles.finalStats}>
             <Text style={styles.statsTitle}>Statistica Finală:</Text>
@@ -172,12 +227,28 @@ export default function GameScreen() {
             </View>
           </View>
 
+          {localMetrics && (
+            <View style={styles.localMetricsContainer}>
+              <View style={styles.localMetricsTitleContainer}>
+                <BarChart2 size={22} color="#A78BFA" />
+                <Text style={styles.localMetricsTitle}>Statistici Generale</Text>
+              </View>
+              <Text style={styles.metricItem}>Jocuri Începute: {localMetrics.playthroughsStarted}</Text>
+              <Text style={styles.metricItem}>Jocuri Terminate: {localMetrics.playthroughsCompleted}</Text>
+              <Text style={styles.metricItem}>Finaluri Pozitive: {localMetrics.endings.positive}</Text>
+              <Text style={styles.metricItem}>Finaluri Neutre: {localMetrics.endings.neutral}</Text>
+              <Text style={styles.metricItem}>Finaluri Negative: {localMetrics.endings.negative}</Text>
+              <Text style={styles.metricItem}>Personaj Masculin Ales: {localMetrics.characterSelections?.male || 0}</Text>
+              <Text style={styles.metricItem}>Personaj Feminin Ales: {localMetrics.characterSelections?.female || 0}</Text>
+            </View>
+          )}
+
           <TouchableOpacity 
             style={styles.playAgainButton}
             onPress={() => {
-              console.log('Reset button pressed directly!');
               setIsGameComplete(false);
               setGameState(initialGameState);
+              storyManager.resetBlockedChoices();
             }}
           >
             <LinearGradient
@@ -243,6 +314,14 @@ export default function GameScreen() {
               </TouchableOpacity>
             </View>
           </View>
+
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={resetGame}
+          >
+            <RotateCcw size={16} color="#64748B" />
+            <Text style={styles.resetText}>Resetează</Text>
+          </TouchableOpacity>
         </ScrollView>
       </SceneBackground>
     );
@@ -285,7 +364,7 @@ export default function GameScreen() {
             />
 
             <View style={styles.choicesContainer}>
-              {currentStep.choices.map((choice, index) => (
+              {getFilteredChoices(currentStep).map((choice, index) => (
                 <ChoiceButton
                   key={index}
                   choice={choice}
@@ -317,19 +396,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Increased opacity
-    padding: 16, // Increased padding
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 16,
     borderRadius: 20,
   },
   characterAvatar: {
-    fontSize: 32, // Increased from 24
+    fontSize: 32,
     marginRight: 8,
   },
   characterName: {
-    fontSize: 22, // Increased from 18
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)', // Added text shadow
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 10,
   },
@@ -343,23 +422,23 @@ const styles = StyleSheet.create({
   sceneHeader: {
     alignItems: 'center',
     marginBottom: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)', // Added background
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     padding: 16,
     borderRadius: 16,
   },
   sceneTitle: {
-    fontSize: 28, // Increased from 24
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)', // Added text shadow
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 10,
   },
   sceneProgress: {
-    fontSize: 16, // Increased from 14
-    fontWeight: '600', // Made bolder
-    color: '#E2E8F0', // Lighter color
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#E2E8F0',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 5,
@@ -368,15 +447,15 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   introspectionContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Increased opacity
-    padding: 24, // Increased padding
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 24,
     borderRadius: 16,
     marginTop: 24,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   introspectionTitle: {
-    fontSize: 24, // Increased from 20
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
@@ -386,35 +465,35 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   introspectionText: {
-    fontSize: 18, // Increased from 16
-    fontWeight: '500', // Made bolder
-    color: '#F1F5F9', // Lighter color
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#F1F5F9',
     textAlign: 'center',
-    lineHeight: 26, // Increased line height
+    lineHeight: 26,
     marginBottom: 24,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 5,
   },
   introspectionChoice: {
-    padding: 20, // Increased padding
+    padding: 20,
     borderRadius: 12,
     marginBottom: 12,
     alignItems: 'center',
   },
   positiveChoice: {
     backgroundColor: '#065F46',
-    borderWidth: 2, // Increased border width
+    borderWidth: 2,
     borderColor: '#10B981',
   },
   negativeChoice: {
     backgroundColor: '#7F1D1D',
-    borderWidth: 2, // Increased border width
+    borderWidth: 2,
     borderColor: '#EF4444',
   },
   choiceText: {
-    fontSize: 18, // Increased from 16
-    fontWeight: '600', // Made bolder
+    fontSize: 18,
+    fontWeight: '600',
     color: '#FFFFFF',
     textAlign: 'center',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
@@ -431,9 +510,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   resetText: {
-    color: '#94A3B8', // Lighter color
-    fontSize: 16, // Increased from 14
-    fontWeight: '600', // Made bolder
+    color: '#94A3B8',
+    fontSize: 16,
+    fontWeight: '600',
     marginLeft: 8,
   },
   endingContainer: {
@@ -442,7 +521,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   endingTitle: {
-    fontSize: 32, // Increased from 28
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
@@ -452,19 +531,19 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   endingText: {
-    fontSize: 18, // Increased from 16
-    fontWeight: '500', // Made bolder
-    color: '#F1F5F9', // Lighter color
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#F1F5F9',
     textAlign: 'center',
-    lineHeight: 26, // Increased line height
+    lineHeight: 26,
     marginBottom: 32,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 5,
   },
   finalStats: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Increased opacity
-    padding: 24, // Increased padding
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 24,
     borderRadius: 16,
     marginBottom: 32,
     width: '100%',
@@ -472,7 +551,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   statsTitle: {
-    fontSize: 22, // Increased from 18
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 16,
@@ -487,25 +566,57 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   statText: {
-    fontSize: 18, // Increased from 16
-    fontWeight: '600', // Made bolder
-    color: '#F1F5F9', // Lighter color
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#F1F5F9',
     marginLeft: 12,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 5,
   },
+  localMetricsContainer: {
+    backgroundColor: 'rgba(167, 139, 250, 0.1)',
+    padding: 24,
+    borderRadius: 16,
+    marginBottom: 32,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.3)',
+  },
+  localMetricsTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  localMetricsTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#A78BFA',
+    textAlign: 'center',
+    marginLeft: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10,
+  },
+  metricItem: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#E2E8F0',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
   playAgainButton: {
     marginBottom: 32,
   },
   playAgainGradient: {
-    paddingVertical: 18, // Increased padding
-    paddingHorizontal: 36, // Increased padding
+    paddingVertical: 18,
+    paddingHorizontal: 36,
     borderRadius: 25,
     alignItems: 'center',
   },
   playAgainButtonText: {
-    fontSize: 20, // Increased from 18
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -513,16 +624,16 @@ const styles = StyleSheet.create({
     textShadowRadius: 5,
   },
   homeButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Increased opacity
-    paddingVertical: 14, // Increased padding
-    paddingHorizontal: 28, // Increased padding
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
     borderRadius: 20,
-    borderWidth: 2, // Increased border width
+    borderWidth: 2,
     borderColor: '#94A3B8',
   },
   homeButtonText: {
-    fontSize: 18, // Increased from 16
-    fontWeight: '600', // Made bolder
-    color: '#E2E8F0', // Lighter color
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#E2E8F0',
   },
 });

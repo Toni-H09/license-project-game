@@ -1,35 +1,122 @@
+
+// Constants for step IDs
+const STEP_IDS = {
+  FACULTY: {
+    STEP_1: 'FACULTY_STEP_1',
+    STEP_2: 'FACULTY_STEP_2',
+    STEP_3: 'FACULTY_STEP_3',
+  },
+  JOB: {
+    STEP_1: 'JOB_STEP_1',
+    STEP_2: 'JOB_STEP_2',
+    STEP_3: 'JOB_STEP_3',
+  },
+  HOUSING: {
+    STEP_1: 'HOUSING_STEP_1',
+    STEP_2: 'HOUSING_STEP_2',
+    STEP_3: 'HOUSING_STEP_3',
+  },
+} as const;
+
+// Constants for choice IDs
+const CHOICE_IDS = {
+  FACULTY: {
+    STEP_1: {
+      CHOICE_1: 'FACULTY_STEP_1_CHOICE_1',
+      CHOICE_2: 'FACULTY_STEP_1_CHOICE_2',
+      CHOICE_3: 'FACULTY_STEP_1_CHOICE_3',
+    },
+    STEP_2: {
+      CHOICE_1: 'FACULTY_STEP_2_CHOICE_1',
+      CHOICE_2: 'FACULTY_STEP_2_CHOICE_2',
+      CHOICE_3: 'FACULTY_STEP_2_CHOICE_3',
+      CHOICE_4: 'FACULTY_STEP_2_CHOICE_4',
+      CHOICE_5: 'FACULTY_STEP_2_CHOICE_5',
+    },
+    STEP_3: {
+      CHOICE_1: 'FACULTY_STEP_3_CHOICE_1',
+      CHOICE_2: 'FACULTY_STEP_3_CHOICE_2',
+      CHOICE_3: 'FACULTY_STEP_3_CHOICE_3',
+      CHOICE_4: 'FACULTY_STEP_3_CHOICE_4',
+      CHOICE_5: 'FACULTY_STEP_3_CHOICE_5',
+    },
+  },
+  JOB: {
+    STEP_1: {
+      CHOICE_1: 'JOB_STEP_1_CHOICE_1',
+      CHOICE_2: 'JOB_STEP_1_CHOICE_2',
+      CHOICE_3: 'JOB_STEP_1_CHOICE_3',
+    },
+    STEP_2: {
+      CHOICE_1: 'JOB_STEP_2_CHOICE_1',
+      CHOICE_2: 'JOB_STEP_2_CHOICE_2',
+      CHOICE_3: 'JOB_STEP_2_CHOICE_3',
+      CHOICE_4: 'JOB_STEP_2_CHOICE_4',
+      CHOICE_5: 'JOB_STEP_2_CHOICE_5',
+    },
+    STEP_3: {
+      CHOICE_1: 'JOB_STEP_3_CHOICE_1',
+      CHOICE_2: 'JOB_STEP_3_CHOICE_2',
+      CHOICE_3: 'JOB_STEP_3_CHOICE_3',
+      CHOICE_4: 'JOB_STEP_3_CHOICE_4',
+      CHOICE_5: 'JOB_STEP_3_CHOICE_5',
+    },
+  },
+  HOUSING: {
+    STEP_1: {
+      CHOICE_1: 'HOUSING_STEP_1_CHOICE_1',
+      CHOICE_2: 'HOUSING_STEP_1_CHOICE_2',
+      CHOICE_3: 'HOUSING_STEP_1_CHOICE_3',
+    },
+    STEP_2: {
+      CHOICE_1: 'HOUSING_STEP_2_CHOICE_1',
+      CHOICE_2: 'HOUSING_STEP_2_CHOICE_2',
+      CHOICE_3: 'HOUSING_STEP_2_CHOICE_3',
+      CHOICE_4: 'HOUSING_STEP_2_CHOICE_4',
+      CHOICE_5: 'HOUSING_STEP_2_CHOICE_5',
+    },
+    STEP_3: {
+      CHOICE_1: 'HOUSING_STEP_3_CHOICE_1',
+      CHOICE_2: 'HOUSING_STEP_3_CHOICE_2',
+      CHOICE_3: 'HOUSING_STEP_3_CHOICE_3',
+      CHOICE_4: 'HOUSING_STEP_3_CHOICE_4',
+      CHOICE_5: 'HOUSING_STEP_3_CHOICE_5',
+    },
+  },
+} as const;
+
 export interface Choice {
   id: string;
   text: string;
   personalStateChange: number;
   socialRelationsChange: number;
+  blocks?: string[]; // Which choice IDs this choice blocks in future questions
 }
 
-export interface Step {
+export interface StoryNode {
+  id: string;
   text: string;
   situation?: string;
-  choices: Choice[];
+  sceneId: string;
+  stepIndex: number;
+  allChoices: Choice[]; // All possible choices for this question
 }
 
-export interface Introspection {
-  text: string;
-  positiveChoice: string;
-  negativeChoice: string;
+export interface ChoiceEdge {
+  id: string; // Same as choice.id
+  fromNode: string; // Which question this choice comes from
+  toNode: string; // Which question this choice leads to (always next in sequence)
+  choice: Choice; // The actual choice data
+  blocks: string[]; // Which choice IDs this edge blocks
 }
 
-export interface Scene {
-  title: string;
-  steps: Step[];
-  introspection: Introspection;
-}
-
-export interface Ending {
-  title: string;
-  text: string;
+export interface StoryGraph {
+  nodes: Map<string, StoryNode>;
+  edges: Map<string, ChoiceEdge>;
 }
 
 export interface Character {
-  id: 'male' | 'female';
+  gender: 'male' | 'female';
   name: string;
   description: string;
   avatar: string;
@@ -48,14 +135,14 @@ export interface GameState {
 
 export const characters: Character[] = [
   {
-    id: 'male',
-    name: '', // Nu mai avem nume default
+    gender: 'male',
+    name: '',
     description: 'Un tânăr ambițios care își începe călătoria prin viață',
     avatar: '👨‍🦽'
   },
   {
-    id: 'female',
-    name: '', // Nu mai avem nume default
+    gender: 'female',
+    name: '',
     description: 'O tânără determinată care își urmează visurile',
     avatar: '👩‍🦽'
   }
@@ -63,80 +150,119 @@ export const characters: Character[] = [
 
 export const gameData = {
   scenes: [
-    // Scena 1: Facultatea
     {
       title: "Facultatea",
       steps: [
         {
+          id: STEP_IDS.FACULTY.STEP_1,
           text: "Este prima ta zi la facultate. Intri în căminul universitar și observi că liftul este defect. Dormitorul tău este la etajul 3.",
           situation: "Cămin Universitar - Ziua 1",
           choices: [
             {
-              id: "f1_ask_help",
+              id: CHOICE_IDS.FACULTY.STEP_1.CHOICE_1,
               text: "Ceri ajutorul altor studenți să te ducă pe scări",
               personalStateChange: 5,
               socialRelationsChange: 10,
+              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_3, CHOICE_IDS.FACULTY.STEP_2.CHOICE_4]
             },
             {
-              id: "f1_wait_lift",
+              id: CHOICE_IDS.FACULTY.STEP_1.CHOICE_2,
               text: "Aștepți până se repară liftul, chiar dacă întârzii",
               personalStateChange: -5,
               socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_2, CHOICE_IDS.FACULTY.STEP_2.CHOICE_5]
             },
             {
-              id: "f1_complain",
+              id: CHOICE_IDS.FACULTY.STEP_1.CHOICE_3,
               text: "Te plângi administrației despre infrastructura inadecvată",
               personalStateChange: 10,
               socialRelationsChange: -5,
-            },
+              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_1, CHOICE_IDS.FACULTY.STEP_2.CHOICE_3]
+            }
           ],
         },
         {
+          id: STEP_IDS.FACULTY.STEP_2,
           text: "La prima lecție, profesorul organizează studenții în grupuri pentru un proiect. Observi că majoritatea meselor sunt prea înalte pentru tine.",
           situation: "Sala de Curs - Prima Lecție",
           choices: [
             {
-              id: "f2_adapt",
+              id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_1,
               text: "Te adaptezi și lucrezi cum poți, fără să spui nimic",
               personalStateChange: -10,
               socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_1, CHOICE_IDS.FACULTY.STEP_3.CHOICE_4]
             },
             {
-              id: "f2_explain",
+              id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_2,
               text: "Explici situația profesorului și ceri o soluție",
               personalStateChange: 5,
               socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_3, CHOICE_IDS.FACULTY.STEP_3.CHOICE_5]
             },
             {
-              id: "f2_leave",
+              id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_3,
               text: "Pleci din sală, simțindu-te exclus",
               personalStateChange: -15,
               socialRelationsChange: -10,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_1, CHOICE_IDS.FACULTY.STEP_3.CHOICE_2]
             },
+            {
+              id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_4,
+              text: "Ceri ajutorul colegilor să îți găsească o soluție",
+              personalStateChange: 0,
+              socialRelationsChange: 10,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_2, CHOICE_IDS.FACULTY.STEP_3.CHOICE_3]
+            },
+            {
+              id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_5,
+              text: "Cauți o masă mai potrivită în altă parte a sălii",
+              personalStateChange: 5,
+              socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_5, CHOICE_IDS.FACULTY.STEP_3.CHOICE_4]
+            }
           ],
         },
         {
+          id: STEP_IDS.FACULTY.STEP_3,
           text: "În pauză, un grup de colegi discută despre o ieșire în oraș la o locație pe care o știi că nu are acces pentru scaune cu rotile.",
           situation: "Curtea Facultății - Pauza",
           choices: [
             {
-              id: "f3_suggest",
+              id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_1,
               text: "Sugerezi o locație alternativă accesibilă",
               personalStateChange: 10,
               socialRelationsChange: 10,
+              blocks: []
             },
             {
-              id: "f3_decline",
+              id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_2,
               text: "Refuzi politicos să vii, inventând o scuză",
               personalStateChange: -5,
               socialRelationsChange: -5,
+              blocks: []
             },
             {
-              id: "f3_ignore",
+              id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_3,
               text: "Nu spui nimic și sperai să nu te invite",
               personalStateChange: -10,
               socialRelationsChange: -10,
+              blocks: []
             },
+            {
+              id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_4,
+              text: "Accepți să vii, sperând că vei găsi o soluție",
+              personalStateChange: -5,
+              socialRelationsChange: 15,
+              blocks: []
+            },
+            {
+              id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_5,
+              text: "Inventezi o scuză medicală pentru a nu participa",
+              personalStateChange: -8,
+              socialRelationsChange: -3,
+              blocks: []
+            }
           ],
         },
       ],
@@ -146,81 +272,120 @@ export const gameData = {
         negativeChoice: "Mă gândesc doar la momentele dificile și la cât de diferit sunt",
       },
     },
-    
-    // Scena 2: Job-ul
+
     {
       title: "Locul de Muncă",
       steps: [
         {
+          id: STEP_IDS.JOB.STEP_1,
           text: "Este primul tău job după facultate. Ajungi la birou și realizezi că baia nu este adaptată pentru scaune cu rotile.",
           situation: "Primul Zi de Lucru",
           choices: [
             {
-              id: "j1_hr_discuss",
+              id: CHOICE_IDS.JOB.STEP_1.CHOICE_1,
               text: "Discuți cu HR-ul despre adaptările necesare",
               personalStateChange: 10,
               socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_3, CHOICE_IDS.JOB.STEP_2.CHOICE_5]
             },
             {
-              id: "j1_manage_alone",
+              id: CHOICE_IDS.JOB.STEP_1.CHOICE_2,
               text: "Încerci să te descurci singur fără să deranjezi pe nimeni",
               personalStateChange: -5,
               socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_1, CHOICE_IDS.JOB.STEP_2.CHOICE_4]
             },
             {
-              id: "j1_feel_burden",
-              text: "Te simți o povară și îți pară rău că ai acceptat jobul",
+              id: CHOICE_IDS.JOB.STEP_1.CHOICE_3,
+              text: "Te simți o povară și îți pare rău că ai acceptat jobul",
               personalStateChange: -15,
               socialRelationsChange: -5,
-            },
+              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_2, CHOICE_IDS.JOB.STEP_2.CHOICE_5]
+            }
           ],
         },
         {
+          id: STEP_IDS.JOB.STEP_2,
           text: "Colegii de echipă organizează o activitate de team building la un loc care pare inaccesibil.",
           situation: "Team Building",
           choices: [
             {
-              id: "j2_propose_alternative",
+              id: CHOICE_IDS.JOB.STEP_2.CHOICE_1,
               text: "Propui o activitate alternativă inclusivă",
               personalStateChange: 15,
               socialRelationsChange: 15,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_2, CHOICE_IDS.JOB.STEP_3.CHOICE_4]
             },
             {
-              id: "j2_attend_anyway",
+              id: CHOICE_IDS.JOB.STEP_2.CHOICE_2,
               text: "Participi oricum, chiar dacă va fi dificil",
               personalStateChange: 5,
               socialRelationsChange: 10,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_1, CHOICE_IDS.JOB.STEP_3.CHOICE_3]
             },
             {
-              id: "j2_skip_event",
+              id: CHOICE_IDS.JOB.STEP_2.CHOICE_3,
               text: "Nu participi și lucrezi de acasă",
               personalStateChange: -10,
               socialRelationsChange: -15,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_5, CHOICE_IDS.JOB.STEP_3.CHOICE_4]
             },
+            {
+              id: CHOICE_IDS.JOB.STEP_2.CHOICE_4,
+              text: "Ceri organizatorilor să găsească o soluție pentru tine",
+              personalStateChange: 5,
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_4, CHOICE_IDS.JOB.STEP_3.CHOICE_2]
+            },
+            {
+              id: CHOICE_IDS.JOB.STEP_2.CHOICE_5,
+              text: "Sugerezi ca activitatea să aibă și o componentă online",
+              personalStateChange: 10,
+              socialRelationsChange: 8,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_3, CHOICE_IDS.JOB.STEP_3.CHOICE_5]
+            }
           ],
         },
         {
+          id: STEP_IDS.JOB.STEP_3,
           text: "Un coleg face remarci nepotrivite despre dizabilitatea ta, aparent în glumă, în fața altor colegi.",
           situation: "Birou - Comentarii Nepotrivite",
           choices: [
             {
-              id: "j3_address_directly",
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_1,
               text: "Îi explici direct de ce comentariile sunt nepotrivite",
               personalStateChange: 10,
               socialRelationsChange: 5,
+              blocks: []
             },
             {
-              id: "j3_laugh_along",
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_2,
               text: "Râzi împreună, deși te simți rănit",
               personalStateChange: -10,
               socialRelationsChange: 5,
+              blocks: []
             },
             {
-              id: "j3_report_hr",
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_3,
               text: "Raportezi incidentul la HR",
               personalStateChange: 5,
               socialRelationsChange: -10,
+              blocks: []
             },
+            {
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_4,
+              text: "Rămâi tăcut dar îți exprimi dezaprobarea prin limbajul corpului",
+              personalStateChange: -5,
+              socialRelationsChange: 0,
+              blocks: []
+            },
+            {
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_5,
+              text: "Îl confrunți public în fața tuturor colegilor",
+              personalStateChange: 15,
+              socialRelationsChange: -5,
+              blocks: []
+            }
           ],
         },
       ],
@@ -230,81 +395,120 @@ export const gameData = {
         negativeChoice: "Simt că mereu voi fi tratat diferit, indiferent de performanțele mele",
       },
     },
-    
-    // Scena 3: Viața în Locuință
+
     {
       title: "Locuința",
       steps: [
         {
+          id: STEP_IDS.HOUSING.STEP_1,
           text: "Cauți un apartament să închiriezi. Proprietarul pare reticent când vede scaunul cu rotile.",
           situation: "Căutarea Apartamentului",
           choices: [
             {
-              id: "l1_explain_rights",
+              id: CHOICE_IDS.HOUSING.STEP_1.CHOICE_1,
               text: "Îi explici drepturile tale și îl asiguri că vei avea grijă",
               personalStateChange: 10,
               socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_3, CHOICE_IDS.HOUSING.STEP_2.CHOICE_5]
             },
             {
-              id: "l1_offer_extra",
+              id: CHOICE_IDS.HOUSING.STEP_1.CHOICE_2,
               text: "Oferi să plătești o garanție suplimentară",
               personalStateChange: -5,
               socialRelationsChange: 10,
+              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_1, CHOICE_IDS.HOUSING.STEP_2.CHOICE_4]
             },
             {
-              id: "l1_leave_quietly",
+              id: CHOICE_IDS.HOUSING.STEP_1.CHOICE_3,
               text: "Pleci în tăcere și continui căutarea",
               personalStateChange: -10,
               socialRelationsChange: -5,
-            },
+              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_2, CHOICE_IDS.HOUSING.STEP_2.CHOICE_1]
+            }
           ],
         },
         {
+          id: STEP_IDS.HOUSING.STEP_2,
           text: "Vecinii organizează o întâlnire în curtea comună pentru a discuta probleme ale blocului. Locul de întâlnire nu este accesibil.",
           situation: "Întâlnirea Vecinilor",
           choices: [
             {
-              id: "l2_suggest_accessible",
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_1,
               text: "Sugerezi să mutați întâlnirea într-un loc accesibil",
               personalStateChange: 15,
               socialRelationsChange: 10,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_3, CHOICE_IDS.HOUSING.STEP_3.CHOICE_2]
             },
             {
-              id: "l2_ask_update",
-              text: "Ceri să te țină la curent cu ce s-a discutat",
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_2,
+              text: "Ceri să te țină la curent cu ce s-a discutât",
               personalStateChange: 0,
               socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_1, CHOICE_IDS.HOUSING.STEP_3.CHOICE_4]
             },
             {
-              id: "l2_isolate",
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_3,
               text: "Nu te implici deloc în problemele comunității",
               personalStateChange: -10,
               socialRelationsChange: -15,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_1, CHOICE_IDS.HOUSING.STEP_3.CHOICE_5]
             },
+            {
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_4,
+              text: "Propui să organizezi tu întâlnirea într-un loc accesibil",
+              personalStateChange: 12,
+              socialRelationsChange: 15,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_3, CHOICE_IDS.HOUSING.STEP_3.CHOICE_2]
+            },
+            {
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_5,
+              text: "Te plângi administrației despre lipsa de accesibilitate",
+              personalStateChange: 8,
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_2, CHOICE_IDS.HOUSING.STEP_3.CHOICE_5]
+            }
           ],
         },
         {
-          text: "O persoană dragă îți propune să mergeti într-o călătorie împreună, dar îți exprimă îngrijorarea legată de planificarea necesară pentru nevoile tale.",
+          id: STEP_IDS.HOUSING.STEP_3,
+          text: "O persoană dragă îți propune să mergeți într-o călătorie împreună, dar îți exprimă îngrijorarea legată de planificarea necesară pentru nevoile tale.",
           situation: "Planuri de Călătorie",
           choices: [
             {
-              id: "l3_plan_together",
+              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_1,
               text: "Propui să planificați împreună călătoria",
               personalStateChange: 15,
               socialRelationsChange: 15,
+              blocks: []
             },
             {
-              id: "l3_take_burden",
+              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_2,
               text: "Îți asumi toată responsabilitatea planificării",
               personalStateChange: -5,
               socialRelationsChange: 5,
+              blocks: []
             },
             {
-              id: "l3_decline_trip",
+              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_3,
               text: "Refuzi călătoria pentru a nu crea probleme",
               personalStateChange: -15,
               socialRelationsChange: -10,
+              blocks: []
             },
+            {
+              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_4,
+              text: "Cercetezi opțiuni accesibile și prezinți alternative",
+              personalStateChange: 10,
+              socialRelationsChange: 12,
+              blocks: []
+            },
+            {
+              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_5,
+              text: "Sugerezi o călătorie mai scurtă și mai accesibilă",
+              personalStateChange: 5,
+              socialRelationsChange: 8,
+              blocks: []
+            }
           ],
         },
       ],
@@ -315,7 +519,7 @@ export const gameData = {
       },
     },
   ],
-  
+
   endings: {
     positive: {
       title: "Integrare și Succes",
@@ -331,3 +535,46 @@ export const gameData = {
     },
   },
 };
+
+// Create the story graph from your existing game data
+export const storyGraph: StoryGraph = (() => {
+  const nodes = new Map<string, StoryNode>();
+  const edges = new Map<string, ChoiceEdge>();
+
+  // Build nodes from scenes and steps
+  gameData.scenes.forEach((scene, sceneIndex) => {
+    scene.steps.forEach((step, stepIndex) => {
+      const node: StoryNode = {
+        id: step.id,
+        text: step.text,
+        situation: step.situation,
+        sceneId: `scene_${sceneIndex}`,
+        stepIndex: stepIndex,
+        allChoices: step.choices
+      };
+      nodes.set(step.id, node);
+
+      // Create edges for each choice
+      step.choices.forEach(choice => {
+        const nextStepIndex = stepIndex + 1;
+        const nextSceneIndex = nextStepIndex >= scene.steps.length ? sceneIndex + 1 : sceneIndex;
+        const nextStep = nextStepIndex < scene.steps.length
+          ? scene.steps[nextStepIndex]
+          : (gameData.scenes[nextSceneIndex]?.steps[0]);
+
+        const toNode = nextStep ? nextStep.id : 'end';
+
+        const edge: ChoiceEdge = {
+          id: choice.id,
+          fromNode: step.id,
+          toNode: toNode,
+          choice: choice,
+          blocks: choice.blocks || []
+        };
+        edges.set(choice.id, edge);
+      });
+    });
+  });
+
+  return { nodes, edges };
+})();

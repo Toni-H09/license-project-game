@@ -1,14 +1,18 @@
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Character } from '@/data/gameData';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import { User, Check } from 'lucide-react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 
 interface CharacterSelectionProps {
   characters: Character[];
   onSelectCharacter: (character: Character) => void;
 }
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const isTablet = screenWidth >= 768;
+const isLargeScreen = screenWidth >= 1024;
 
 export default function CharacterSelection({ characters, onSelectCharacter }: CharacterSelectionProps) {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
@@ -16,25 +20,18 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
 
   const handleCharacterSelect = (character: Character) => {
     setSelectedCharacter(character);
-    // Nu mai setăm numele default
   };
 
   const handleConfirm = () => {
-    if (!selectedCharacter) {
-      Alert.alert('Eroare', 'Te rugăm să selectezi un caracter');
-      return;
-    }
-
-    if (!name.trim()) {
-      Alert.alert('Eroare', 'Te rugăm să introduci un nume');
+    if (!selectedCharacter || !name.trim()) {
       return;
     }
 
     const finalCharacter: Character = {
       ...selectedCharacter,
-      name: name.trim() // Actualizează numele pentru afișare
+      name: name.trim()
     };
-
+    
     onSelectCharacter(finalCharacter);
   };
 
@@ -48,29 +45,27 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
       <View style={styles.charactersContainer}>
         {characters.map((character) => (
           <TouchableOpacity
-            key={character.id}
+            key={character.gender}
             style={[
               styles.characterCard,
-              selectedCharacter?.id === character.id && styles.selectedCharacterCard
+              selectedCharacter?.gender === character.gender && styles.selectedCharacterCard
             ]}
             onPress={() => handleCharacterSelect(character)}
             activeOpacity={0.8}
           >
             <LinearGradient
               colors={
-                selectedCharacter?.id === character.id
-                  ? ['#10B981', '#059669']
-                  : character.id === 'male' 
-                    ? ['#3B82F6', '#2563EB'] 
-                    : ['#EC4899', '#BE185D']
+                character.gender === 'male' 
+                  ? ['#3B82F6', '#2563EB'] 
+                  : ['#EC4899', '#BE185D']
               }
               style={styles.characterGradient}
             >
               <Text style={styles.avatar}>{character.avatar}</Text>
               <Text style={styles.characterDescription}>{character.description}</Text>
-              {selectedCharacter?.id === character.id && (
+              {selectedCharacter?.gender === character.gender && (
                 <View style={styles.selectedIndicator}>
-                  <Check size={20} color="#FFFFFF" />
+                  <Check size={isTablet ? 24 : 20} color="#FFFFFF" />
                 </View>
               )}
             </LinearGradient>
@@ -79,9 +74,10 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
       </View>
 
       <View style={styles.nameInputContainer}>
-        <Text style={styles.nameInputLabel}>
-          <User size={16} color="#FFFFFF" /> Introdu-ți numele:
-        </Text>
+        <View style={styles.nameInputLabelRow}>
+          <User size={isTablet ? 20 : 16} color="#FFFFFF" />
+          <Text style={styles.nameInputLabel}>Introdu-ți numele:</Text>
+        </View>
         <TextInput
           style={styles.nameInput}
           value={name}
@@ -107,7 +103,7 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
             colors={['#10B981', '#059669']}
             style={styles.confirmGradient}
           >
-            <Check size={20} color="#FFFFFF" />
+            <Check size={isTablet ? 24 : 20} color="#FFFFFF" />
             <Text style={styles.confirmButtonText}>Începe Aventura ca {name.trim()}</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -125,140 +121,171 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 60,
+    padding: isTablet ? 32 : 24,
+    justifyContent: 'center',
+    maxWidth: isLargeScreen ? 1200 : '100%',
+    alignSelf: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: isLargeScreen ? 40 : isTablet ? 36 : 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: isTablet ? 16 : 12,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: isLargeScreen ? 22 : isTablet ? 20 : 16,
     color: '#CBD5E1',
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    marginBottom: isTablet ? 50 : 40,
+    lineHeight: isTablet ? 32 : 24,
+    paddingHorizontal: isTablet ? 40 : 20,
   },
   charactersContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    gap: 16,
+    flexDirection: screenWidth < 600 ? 'column' : 'row',
+    justifyContent: screenWidth < 600 ? 'center' : 'space-between',
+    alignItems: 'center',
+    marginBottom: isTablet ? 50 : 40,
+    paddingHorizontal: isTablet ? 20 : 5,
+    gap: screenWidth < 600 ? 20 : isLargeScreen ? 40 : isTablet ? 30 : 20,
   },
   characterCard: {
-    flex: 1,
-    borderRadius: 16,
+    width: screenWidth < 600 
+      ? Math.min(screenWidth - 80, 300)
+      : isLargeScreen 
+        ? 400 
+        : isTablet 
+          ? Math.min((screenWidth - 160) / 2, 350)
+          : Math.min((screenWidth - 100) / 2, 180),
+    height: screenWidth < 600 
+      ? Math.min(screenWidth - 80, 300) * 0.8
+      : isLargeScreen 
+        ? 320 
+        : isTablet 
+          ? Math.min((screenWidth - 160) / 2, 350) * 0.8
+          : Math.min((screenWidth - 100) / 2, 180) * 1.2,
+    borderRadius: isTablet ? 24 : 20,
     overflow: 'hidden',
-    elevation: 5,
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
   selectedCharacterCard: {
     transform: [{ scale: 1.05 }],
-    elevation: 8,
-    shadowOpacity: 0.4,
   },
   characterGradient: {
-    padding: 20,
+    flex: 1,
+    padding: isTablet ? 30 : 20,
     alignItems: 'center',
-    minHeight: 160,
     justifyContent: 'center',
     position: 'relative',
   },
   avatar: {
-    fontSize: 96,
-    marginBottom: 16,
+    fontSize: isLargeScreen ? 120 : isTablet ? 100 : screenWidth < 600 ? 80 : 60,
+    marginBottom: isTablet ? 24 : 16,
   },
   characterDescription: {
-    fontSize: 14,
-    color: '#F1F5F9',
+    color: '#FFFFFF',
+    fontSize: isLargeScreen ? 20 : isTablet ? 18 : screenWidth < 600 ? 16 : 14,
     textAlign: 'center',
-    lineHeight: 20,
+    fontWeight: '600',
+    lineHeight: isTablet ? 28 : 22,
   },
   selectedIndicator: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 15,
-    padding: 5,
+    top: isTablet ? 20 : 15,
+    right: isTablet ? 20 : 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: isTablet ? 24 : 20,
+    padding: isTablet ? 10 : 8,
   },
   nameInputContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#475569',
+    marginBottom: isTablet ? 50 : 40,
+    paddingHorizontal: isTablet ? 20 : 10,
+    maxWidth: isTablet ? 600 : '100%',
+    alignSelf: 'center',
+    width: '100%',
   },
-  nameInputLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 12,
+  nameInputLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: isTablet ? 20 : 15,
+  },
+  nameInputLabel: {
+    fontSize: isLargeScreen ? 22 : isTablet ? 20 : 18,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginLeft: isTablet ? 12 : 10,
   },
   nameInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: '#64748B',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
+    borderRadius: isTablet ? 20 : 15,
+    padding: isTablet ? 24 : 18,
+    fontSize: isLargeScreen ? 22 : isTablet ? 20 : 18,
     color: '#FFFFFF',
-    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    textAlign: 'center',
+    fontWeight: '500',
   },
   nameHint: {
-    fontSize: 12,
+    fontSize: isLargeScreen ? 18 : isTablet ? 16 : 14,
     color: '#94A3B8',
+    textAlign: 'center',
+    marginTop: isTablet ? 16 : 12,
     fontStyle: 'italic',
+    lineHeight: isTablet ? 24 : 20,
   },
   confirmButton: {
-    marginBottom: 24,
-    borderRadius: 25,
+    borderRadius: isTablet ? 20 : 15,
     overflow: 'hidden',
-    elevation: 3,
+    marginBottom: isTablet ? 40 : 30,
+    marginHorizontal: isTablet ? 20 : 10,
+    elevation: 6,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 3,
     },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    maxWidth: isTablet ? 600 : '100%',
+    alignSelf: 'center',
+    width: '100%',
   },
   confirmGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    gap: 8,
+    padding: isTablet ? 24 : 18,
   },
   confirmButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
     color: '#FFFFFF',
+    fontSize: isLargeScreen ? 22 : isTablet ? 20 : 18,
+    fontWeight: 'bold',
+    marginLeft: isTablet ? 12 : 10,
   },
   infoBox: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    padding: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3B82F6',
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    borderRadius: isTablet ? 20 : 15,
+    padding: isTablet ? 24 : 20,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    marginHorizontal: isTablet ? 20 : 10,
+    maxWidth: isTablet ? 700 : '100%',
+    alignSelf: 'center',
   },
   infoText: {
-    fontSize: 14,
     color: '#93C5FD',
-    lineHeight: 20,
+    fontSize: isLargeScreen ? 20 : isTablet ? 18 : 16,
     textAlign: 'center',
+    lineHeight: isTablet ? 28 : 24,
+    fontWeight: '500',
   },
 });
