@@ -83,6 +83,10 @@ class StoryGraph {
 
 ### 3. Diagram Schema
 
+The game's structure is a **linear progression of story nodes**, but with **dynamic choices**. A choice made at one step determines the set of available choices at the next step, even though the story event itself is the same.
+
+This diagram illustrates how different choices from a single node (`STEP 1`) all lead to the same next node (`STEP 2`), but the choice taken (`1A`, `1B`, or `1C`) influences which choices are available later.
+
 ```
 [START] --> (Choice A) --> [Node 1]
             |
@@ -93,14 +97,20 @@ class StoryGraph {
 [Node 1] --> (Choice D) --> [Node 4]
            |
            |---> (Choice E) --> [Node 5]
-
-[Node 2] --> (Choice F) --> [Node 6]
            |
-           |---> (Choice G) --> [Node 7]
+           |---> (Choice F) --> [Node 6]
 
-[Node 3] --> (Choice H) --> [Node 8]
+[Node 2] --> (Choice G) --> [Node 7]
+           |
+           |---> (Choice H) --> [Node 8]
            |
            |---> (Choice I) --> [Node 9]
+
+[Node 3] --> (Choice J) --> [Node 10]
+           |
+           |---> (Choice K) --> [Node 11]
+           |
+           |---> (Choice L) --> [Node 12]
 ```
 
 Each node represents a story step with multiple choice options, and edges represent valid transitions between story steps based on player decisions and state constraints.
@@ -119,8 +129,9 @@ Here's how the game flow works from start to finish:
 Example flow:
 - Player starts at [START] node
 - Chooses "Choice A" → moves to [Node 1]
-- At [Node 1], player sees choices D and E
+- At [Node 1], player sees choices D, E and F
 - If player chooses D, they go to [Node 4]
 - If player chooses E, they go to [Node 5]
+- If player chooses F, they go to [Node 6]
 - Each choice may block certain future paths
 - Game continues until no more choices are available

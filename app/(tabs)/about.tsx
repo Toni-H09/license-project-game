@@ -1,11 +1,37 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Heart, Users, Phone, ExternalLink, BookOpen } from 'lucide-react-native';
+import { Heart, Users, Phone, ExternalLink, BookOpen, BarChart2, Trash2 } from 'lucide-react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { getMetrics, resetMetrics, LocalMetrics, initialMetrics } from '@/utils/localMetrics';
+import { useFocusEffect } from 'expo-router';
 
 export default function AboutScreen() {
+  const [metrics, setMetrics] = useState<LocalMetrics | null>(null);
+
+  // Helper to reload metrics from storage
+  const reloadMetrics = useCallback(async () => {
+    const loadedMetrics = await getMetrics();
+    setMetrics(loadedMetrics);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Always return a cleanup or nothing for useFocusEffect
+      reloadMetrics();
+    }, [reloadMetrics])
+  );
+
   const openLink = (url: string) => {
     Linking.openURL(url);
+  };
+
+  const handleResetMetrics = async () => {
+    try {
+      await resetMetrics();
+      await reloadMetrics();
+    } catch (error) {
+      console.error('Error resetting metrics:', error);
+    }
   };
 
   return (
@@ -49,6 +75,30 @@ export default function AboutScreen() {
         </View>
 
         <View style={styles.section}>
+          <View style={styles.sectionTitleContainer}>
+            <BarChart2 size={20} color="#A78BFA" />
+            <Text style={styles.sectionTitle}>Statistici Personale</Text>
+          </View>
+          {metrics ? (
+            <View style={styles.metricsContainer}>
+              <Text style={styles.metricItem}>Jocuri Începute: {metrics.playthroughsStarted}</Text>
+              <Text style={styles.metricItem}>Jocuri Terminate: {metrics.playthroughsCompleted}</Text>
+              <Text style={styles.metricItem}>Finaluri Pozitive: {metrics.endings.positive}</Text>
+              <Text style={styles.metricItem}>Finaluri Neutre: {metrics.endings.neutral}</Text>
+              <Text style={styles.metricItem}>Finaluri Negative: {metrics.endings.negative}</Text>
+              <Text style={styles.metricItem}>Personaj Masculin Ales: {metrics.characterSelections?.male || 0}</Text>
+              <Text style={styles.metricItem}>Personaj Feminin Ales: {metrics.characterSelections?.female || 0}</Text>
+              <TouchableOpacity style={styles.resetMetricsButton} onPress={handleResetMetrics}>
+                <Trash2 size={16} color="#EF4444" />
+                <Text style={styles.resetMetricsText}>Resetează Statisticile</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Text style={styles.text}>Se încarcă statisticile...</Text>
+          )}
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Conținut Sensibil</Text>
           <Text style={styles.warningText}>
             Acest joc abordează teme serioase legate de sănătatea mentală, 
@@ -59,9 +109,10 @@ export default function AboutScreen() {
         </View>
 
         <View style={styles.helpSection}>
-          <Text style={styles.helpTitle}>
-            <Phone size={20} color="#10B981" /> Linii de Ajutor
-          </Text>
+          <View style={styles.helpTitleContainer}>
+            <Phone size={20} color="#10B981" />
+            <Text style={styles.helpTitle}>Linii de Ajutor</Text>
+          </View>
           
           <TouchableOpacity 
             style={styles.helpButton}
@@ -119,11 +170,28 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 24,
   },
+  sectionTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  helpTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  helpTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#10B981',
+    marginLeft: 8,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 12,
+    marginLeft: 8,
   },
   text: {
     fontSize: 16,
@@ -162,13 +230,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#10B981',
   },
-  helpTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#10B981',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
   helpButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -202,5 +263,30 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     lineHeight: 20,
     textAlign: 'center',
+  },
+  metricsContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    padding: 15,
+    marginTop: 10,
+  },
+  metricItem: {
+    color: '#CBD5E1',
+    fontSize: 15,
+    marginBottom: 8,
+  },
+  resetMetricsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: 8,
+  },
+  resetMetricsText: {
+    color: '#EF4444',
+    marginLeft: 8,
+    fontWeight: 'bold',
   },
 });

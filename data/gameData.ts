@@ -115,32 +115,8 @@ export interface StoryGraph {
   edges: Map<string, ChoiceEdge>;
 }
 
-export interface Step {
-  id: string;
-  text: string;
-  situation?: string;
-  choices: Choice[];
-}
-
-export interface Introspection {
-  text: string;
-  positiveChoice: string;
-  negativeChoice: string;
-}
-
-export interface Scene {
-  title: string;
-  steps: Step[];
-  introspection: Introspection;
-}
-
-export interface Ending {
-  title: string;
-  text: string;
-}
-
 export interface Character {
-  id: 'male' | 'female';
+  gender: 'male' | 'female';
   name: string;
   description: string;
   avatar: string;
@@ -155,26 +131,17 @@ export interface GameState {
   introspectionMode: boolean;
   selectedCharacter?: Character;
   characterSelected: boolean;
-  activeRelationships: string[];
-}
-
-export interface ChoiceNode {
-  id: string;
-  text: string;
-  personalStateChange: number;
-  socialRelationsChange: number;
-  blocks: string[];
 }
 
 export const characters: Character[] = [
   {
-    id: 'male',
+    gender: 'male',
     name: '',
     description: 'Un tânăr ambițios care își începe călătoria prin viață',
     avatar: '👨‍🦽'
   },
   {
-    id: 'female',
+    gender: 'female',
     name: '',
     description: 'O tânără determinată care își urmează visurile',
     avatar: '👩‍🦽'

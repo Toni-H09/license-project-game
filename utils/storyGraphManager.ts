@@ -38,17 +38,6 @@ export class StoryGraphManager {
     return Array.from(this.storyGraph.edges.values()).find(edge => edge.choice.id === choiceId);
   }
 
-  printGraphStructure(): void {
-    console.log('=== STORY GRAPH STRUCTURE ===');
-    console.log('Nodes:', this.storyGraph.nodes.size);
-    console.log('Edges:', this.storyGraph.edges.size);
-    console.log('Blocked choices:', Array.from(this.blockedChoices));
-    
-    Array.from(this.storyGraph.edges.values()).forEach(edge => {
-      console.log(`Edge: ${edge.fromNode} -> ${edge.toNode} (choice: ${edge.choice.id})`);
-    });
-  }
-
   resetBlockedChoices(): void {
     this.blockedChoices.clear();
   }
