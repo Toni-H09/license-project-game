@@ -3,11 +3,14 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://Toni-H09.github.io/license-project-game/",
   "scripts": {
     "dev": "expo start",
     "dev:no-telemetry": "set EXPO_NO_TELEMETRY=1 && expo start",
     "build:web": "expo export --platform web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "predeploy": "npx expo export --platform web",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -45,6 +48,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "gh-pages": "^6.3.0",
     "typescript": "~5.8.3"
   }
 }
