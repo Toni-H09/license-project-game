@@ -36,7 +36,7 @@ jobs:
       # 4. Build Expo web
       - name: Build Expo Web
         run: |
-          npx expo export --platform web
+          npx expo export --platform web --public-url https://toni-h09.github.io/license-project-game/
           touch dist/.nojekyll
 
       # 5. Deploy to gh-pages
@@ -45,3 +45,5 @@ jobs:
         with:
           github_token: ${{ secrets.GH_PAGE }}
           publish_dir: dist
+          publish_branch: gh-pages
+          disable_nojekyll: true

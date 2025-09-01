@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://Toni-H09.github.io/license-project-game/",
+  "homepage": "https://toni-h09.github.io/license-project-game/",
   "scripts": {
     "dev": "expo start",
     "dev:no-telemetry": "set EXPO_NO_TELEMETRY=1 && expo start",
