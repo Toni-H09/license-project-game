@@ -35,7 +35,7 @@ jobs:
 
       # 4. Build Expo web
       - name: Build Expo Web
-        run: npx expo export --platform web touch dist/.nojekyll
+        run: npx expo export --platform web
 
       # 5. Deploy to gh-pages
       - name: Deploy to GitHub Pages
