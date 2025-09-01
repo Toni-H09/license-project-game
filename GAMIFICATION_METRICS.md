@@ -13,6 +13,34 @@ The following metrics are actively tracked and stored locally on each device:
 - `characterSelections.male`: Count of times male character was selected
 - `characterSelections.female`: Count of times female character was selected
 
+```typescript
+// Example: Tracking game start and character selection
+const handleCharacterSelection = async (character: Character) => {
+  try {
+    await trackGameStart(); // Increments playthroughsStarted
+    await trackCharacterSelection(character.gender); // Increments male/female count
+    
+    setGameState({
+      ...gameState,
+      selectedCharacter: character,
+      characterSelected: true,
+    });
+  } catch (error) {
+    console.error('Error in handleCharacterSelection:', error);
+  }
+};
+
+export const trackGameStart = async () => {
+  try {
+    const metrics = await getMetrics();
+    metrics.playthroughsStarted += 1;
+    await saveMetrics(metrics);
+  } catch (error) {
+    console.error('Error in trackGameStart:', error);
+  }
+};
+```
+
 ### Outcome Metrics
 - `endings.positive`: Count of positive endings achieved (avgState >= 70)
 - `endings.neutral`: Count of neutral endings achieved (40 <= avgState < 70)
@@ -43,3 +71,27 @@ Implement automatic calculation of completion rate (`playthroughsCompleted / pla
 
 ### 5. Scene-Specific Drop-off Tracking
 Identify at which specific scene or step players are most likely to exit the game. This helps pinpoint parts of the story that may be confusing, frustrating, or disengaging, allowing for targeted improvements.
+
+# Gamification Metrics Implementation
+
+## Overview
+
+This educational game implements a comprehensive local metrics tracking system to monitor player engagement, choices, and progression patterns. The system uses React Native's AsyncStorage for persistent data storage and provides detailed analytics about player behavior.
+
+## Core Metrics Interface
+
+```typescript
+export interface LocalMetrics {
+  playthroughsStarted: number;
+  playthroughsCompleted: number;
+  choices: { [key: string]: number };
+  characterSelections: {
+    male: number;
+    female: number;
+  };
+  endings: {
+    positive: number;
+    neutral: number;
+    negative: number;
+  };
+}

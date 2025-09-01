@@ -22,14 +22,6 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        <View style={styles.warning}>
-          <Text style={styles.warningTitle}>⚠️ Avertisment Important</Text>
-          <Text style={styles.warningText}>
-            Acest joc conține teme sensibile legate de sănătatea mentală și provocări sociale. 
-            Dacă vă confruntați cu gânduri negative, vă rugăm să contactați o linie de ajutor.
-          </Text>
-        </View>
-
         <View style={styles.features}>
           <View style={styles.feature}>
             <Heart size={32} color="#10B981" />

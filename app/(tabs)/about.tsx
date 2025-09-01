@@ -98,47 +98,6 @@ export default function AboutScreen() {
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Conținut Sensibil</Text>
-          <Text style={styles.warningText}>
-            Acest joc abordează teme serioase legate de sănătatea mentală, 
-            izolarea socială și provocările dizabilității. Dacă te simți 
-            afectat de conținut, te rugăm să iei o pauză și să contactezi 
-            o sursă de sprijin.
-          </Text>
-        </View>
-
-        <View style={styles.helpSection}>
-          <View style={styles.helpTitleContainer}>
-            <Phone size={20} color="#10B981" />
-            <Text style={styles.helpTitle}>Linii de Ajutor</Text>
-          </View>
-          
-          <TouchableOpacity 
-            style={styles.helpButton}
-            onPress={() => openLink('tel:116123')}
-          >
-            <Text style={styles.helpButtonText}>Telefonul de Suflet: 116 123</Text>
-            <ExternalLink size={16} color="#10B981" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.helpButton}
-            onPress={() => openLink('https://www.who.int/health-topics/disability')}
-          >
-            <Text style={styles.helpButtonText}>Resurse WHO pentru Dizabilități</Text>
-            <ExternalLink size={16} color="#10B981" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.helpButton}
-            onPress={() => openLink('https://www.ims.ro')}
-          >
-            <Text style={styles.helpButtonText}>Institutul Marius Nasta</Text>
-            <ExternalLink size={16} color="#10B981" />
-          </TouchableOpacity>
-        </View>
-
         <View style={styles.credits}>
           <Text style={styles.creditsTitle}>Credite</Text>
           <Text style={styles.creditsText}>

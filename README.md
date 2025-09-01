@@ -1,178 +1,181 @@
-# Trăiește viața în scaun cu rotile
+# Living Life in a Wheelchair
 
-Un joc educațional interactiv de tip storytelling care explorează experiența de viață a unei persoane cu dizabilități, dezvoltat în React Native cu Expo.
+An interactive educational storytelling game that explores the life experience of a person with disabilities, built with React Native and Expo.
 
-## 📱 Despre Joc
+## 📱 About the Game
 
-Acest joc oferă o experiență narativă interactivă care ajută jucătorii să înțeleagă provocările și triumfurile vieții cu dizabilități. Prin alegeri multiple și consecințe realiste, jocul promovează empatia și conștientizarea asupra experiențelor persoanelor în scaun cu rotile.
+This game offers an interactive narrative experience that helps players understand the challenges and triumphs of living with disabilities. Through multiple choices and realistic consequences, the game promotes empathy and awareness about the experiences of people in wheelchairs.
 
-### 🎯 Obiective
+### 🎯 Objectives
 
-- **Educațional**: Creșterea conștientizării asupra provocărilor dizabilității
-- **Empatic**: Dezvoltarea înțelegerii și empatiei
-- **Inclusiv**: Promovarea incluziunii sociale și accesibilității
+- **Educational**: Raising awareness about disability challenges
+- **Empathetic**: Developing understanding and empathy
+- **Inclusive**: Promoting social inclusion and accessibility
 
-## 🎮 Caracteristici
+## 🎮 Features
 
 ### Gameplay
-- **3 Scene Principale**: Facultatea, Locul de Muncă, Viața în Locuință
-- **Sistem de Alegeri**: Decizii multiple care afectează progresul
-- **Bare de Progres**: Urmărirea stării personale și relațiilor sociale
-- **Momente Introspective**: Reflecții la sfârșitul fiecărei scene
-- **Finaluri Multiple**: Rezultate bazate pe alegerile jucătorului
-- **Selecție Personaj**: Alege între personaje masculine și feminine cu nume personalizat
+- **3 Main Scenes**: University, Workplace, Housing Life
+- **Choice System**: Multiple decisions that affect progression
+- **Progress Bars**: Tracking personal state and social relationships
+- **Introspective Moments**: Reflections at the end of each scene
+- **Multiple Endings**: Results based on player choices
+- **Character Selection**: Choose between male and female characters with custom names
 
 ### Interface
-- **Design Accesibil**: Contrast ridicat și tipografie clară
-- **Animații Subtile**: Tranziții fluide și feedback vizual
-- **Responsive**: Optimizat pentru dispozitive mobile
-- **Navigare Intuitivă**: Tab-uri pentru secțiuni diferite
-- **Gradient-uri Moderne**: Design vizual atractiv cu culori vibrante
+- **Accessible Design**: High contrast and clear typography
+- **Subtle Animations**: Smooth transitions and visual feedback
+- **Responsive**: Optimized for mobile devices
+- **Intuitive Navigation**: Tabs for different sections
+- **Modern Gradients**: Attractive visual design with vibrant colors
 
-## 🛠️ Tehnologii Utilizate
+## 🛠️ Technologies Used
 
-- **React Native** - Framework pentru dezvoltare mobilă
-- **Expo** - Platformă de dezvoltare și deployment
-- **TypeScript** - Tipizare statică pentru JavaScript
-- **Expo Router** - Navigare bazată pe fișiere
-- **React Native Reanimated** - Animații performante
-- **Lucide React Native** - Iconuri moderne
-- **Expo Linear Gradient** - Gradient-uri vizuale
+- **React Native** - Mobile development framework
+- **Expo** - Development and deployment platform
+- **TypeScript** - Static typing for JavaScript
+- **Expo Router** - File-based navigation
+- **React Native Reanimated** - High-performance animations
+- **Lucide React Native** - Modern icons
+- **Expo Linear Gradient** - Visual gradients
 
-## 📦 Instalare și Rulare
+## 📦 Installation and Setup
 
-### Cerințe
-- Node.js (versiunea 18 sau mai nouă)
-- npm sau yarn
-- Expo CLI (opțional, pentru comenzi suplimentare)
+### Requirements
+- Node.js (version 18 or newer)
+- npm or yarn
+- Expo CLI (optional, for additional commands)
 
-### Pași de instalare
+### Installation Steps
 
-1. **Clonează repository-ul**
+1. **Clone the repository**
 ```bash
 git clone [repository-url]
 cd project-licenta-joc-educational
 ```
 
-2. **Instalează dependențele**
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. **Pornește aplicația**
+3. **Start the application**
 ```bash
 npm run dev
 ```
 
-4. **Accesează aplicația**
-- **Web**: Deschide browserul la adresa afișată în terminal
-- **Mobile**: Scanează QR code-ul cu aplicația Expo Go
+4. **Access the application**
+- **Web**: Open browser at address shown in terminal
+- **Mobile**: Scan QR code with Expo Go app
 
-## 🎯 Structura Jocului
+## 🎯 Game Structure
 
-### Scene și Progresie
+### Scenes and Progression
 
-#### 1. Facultatea
-- Prima zi în cămin (lift defect)
-- Organizarea în grupuri pentru proiecte
-- Invitații sociale și accesibilitate
+#### 1. University
+- First day in dorm (broken elevator)
+- Group organization for projects
+- Social invitations and accessibility
 
-#### 2. Locul de Muncă
-- Primul job și adaptările necesare
-- Team building și activități sociale
-- Gestionarea comentariilor nepotrivite
+#### 2. Workplace
+- First job and required adaptations
+- Team building and social activities
+- Managing inappropriate comments
 
-#### 3. Viața în Locuință
-- Căutarea unui apartament
-- Relații cu vecinii
-- Planificarea călătoriilor
+#### 3. Housing Life
+- Searching for an apartment
+- Relationships with neighbors
+- Planning trips
 
-### Sistem de Progres
+### Progress System
 
-#### Stare Personală (0-100%)
-- **Încredere**: Sentimentul de siguranță în propriile abilități
-- **Speranță**: Optimismul față de viitor
-- **Resemnare**: Acceptarea pasivă a situațiilor
-- **Dezamăgire**: Sentimentele negative față de experiențe
+#### Personal State (0-100%)
+- **Confidence**: Feeling secure in one's abilities
+- **Hope**: Optimism towards the future
+- **Resignation**: Passive acceptance of situations
+- **Disappointment**: Negative feelings towards experiences
 
-#### Relații Sociale (0-100%)
-- **Sociabilitate**: Capacitatea de a interacționa cu alții
-- **Integrare**: Sentimentul de apartenență la comunitate
-- **Izolare**: Tendința de retragere socială
-- **Suport**: Rețeaua de sprijin disponibilă
+#### Social Relationships (0-100%)
+- **Sociability**: Ability to interact with others
+- **Integration**: Feeling of belonging to community
+- **Isolation**: Tendency to withdraw socially
+- **Support**: Available support network
 
-### Finaluri Posibile
+### Possible Endings
 
-#### 🌟 Pozitiv - "Integrare și Succes"
-- Stare medie: 70%+
-- Relații puternice și stare emoțională pozitivă
-- Devine avocat pentru incluziune
+#### 🌟 Positive - "Integration and Success"
+- Average state: 70%+
+- Strong relationships and positive emotional state
+- Becomes an advocate for inclusion
 
-#### ⚖️ Neutru - "Echilibru și Acceptare"
-- Stare medie: 40-69%
-- Echilibru între provocări și succese
-- Dezvoltă strategii de adaptare
+#### ⚖️ Neutral - "Balance and Acceptance"
+- Average state: 40-69%
+- Balance between challenges and successes
+- Develops adaptation strategies
 
-#### 🆘 Negativ - "Reflecție și Speranță"
-- Stare medie: sub 40%
-- Momente dificile și provocări majore
-- Include resurse de ajutor și sprijin
+#### 🆘 Negative - "Reflection and Hope"
+- Average state: under 40%
+- Difficult moments and major challenges
+- Includes help and support resources
 
-## 🔒 Conținut Sensibil și Siguranță
-
-### Avertismente
-- Jocul conține teme sensibile legate de sănătatea mentală
-- Include situații de discriminare și provocări sociale
-- Poate afecta emoțional unii jucători
-
-### Resurse de Ajutor
-- **Telefonul de Suflet**: 116 123 (24/7)
-- **Asociația pentru Dizabilități**: 021.222.2222
-- **Centrul de Consiliere**: 0800.801.200
-
-### Măsuri de Siguranță
-- Disclaimer clar la începutul jocului
-- Resurse de ajutor vizibile permanent
-- Opțiune de resetare și ieșire din joc
-- Conținut educațional, nu glorificare
-
-## 📁 Structura Proiectului
+## 📁 Project Structure
 
 ```
 ├── app/
 │   ├── (tabs)/
-│   │   ├── index.tsx          # Ecran principal
-│   │   ├── game.tsx           # Logica jocului
-│   │   ├── about.tsx          # Informații despre joc
-│   │   └── _layout.tsx        # Layout tab-uri
-│   ├── _layout.tsx            # Layout principal
-│   └── +not-found.tsx         # Pagina 404
+│   │   ├── index.tsx          # Main screen
+│   │   ├── game.tsx           # Game logic
+│   │   ├── about.tsx          # About game info
+│   │   └── _layout.tsx        # Tabs layout
+│   ├── _layout.tsx            # Main layout
+│   └── +not-found.tsx         # 404 page
 ├── components/
-│   ├── ProgressBar.tsx        # Bara de progres animată
-│   ├── StoryDisplay.tsx       # Afișarea poveștii
-│   └── ChoiceButton.tsx       # Butoane pentru alegeri
+│   ├── AnimatedCharacter.tsx  # Animated character
+│   ├── CharacterSelection.tsx # Character selection
+│   ├── ChoiceButton.tsx       # Choice buttons
+│   ├── ProgressBar.tsx        # Animated progress bar
+│   ├── SceneBackground.tsx    # Scene background
+│   └── StoryDisplay.tsx       # Story display
 ├── data/
-│   └── gameData.ts           # Date și logica jocului
+│   └── gameData.ts           # Game data and config
 ├── hooks/
-│   └── useFrameworkReady.ts  # Hook pentru inițializare
-└── assets/                   # Imagini și resurse
+│   └── useFrameworkReady.ts  # Initialization hook
+├── utils/
+│   ├── gameStateMachine.ts   # Game state machine
+│   ├── localMetrics.ts       # Local metrics tracking
+│   └── storyGraphManager.ts  # Story graph manager
+├── assets/
+│   ├── images/
+│   │   ├── backgrounds/      # Scene backgrounds
+│   │   │   ├── home-bg.jpg
+│   │   │   ├── office-bg.jpg
+│   │   │   └── university-bg.jpg
+│   │   └── icons/           # App icons
+│   └── fonts/               # Custom fonts
+├── docs/
+│   ├── GAMIFICATION_METRICS.md    # Metrics documentation
+│   └── GRAPH_THEORY_DOCUMENTATION.md # Graph theory docs
+├── package.json             # Dependencies and scripts
+├── tsconfig.json           # TypeScript config
+├── app.json                # Expo configuration
+└── README.md               # Project documentation
 ```
 
-## 🎨 Design și Accesibilitate
+## 🎨 Design and Accessibility
 
-### Paleta de Culori
-- **Primar**: #3B82F6 (Albastru)
-- **Succes**: #10B981 (Verde)
-- **Atenție**: #F59E0B (Galben)
-- **Eroare**: #EF4444 (Roșu)
-- **Fundal**: #1E293B → #334155 (Gradient întunecat)
+### Color Palette
+- **Primary**: #3B82F6 (Blue)
+- **Success**: #10B981 (Green)
+- **Attention**: #F59E0B (Yellow)
+- **Error**: #EF4444 (Red)
+- **Background**: #1E293B → #334155 (Dark gradient)
 
-### Principii de Accesibilitate
-- Contrast ridicat pentru text (WCAG AA)
-- Dimensiuni mari pentru butoane (min 44px)
-- Iconuri descriptive pentru toate acțiunile
-- Feedback vizual clar pentru interacțiuni
-- Suport pentru screen readers
+### Accessibility Principles
+- High contrast for text (WCAG AA)
+- Large button sizes (min 44px)
+- Descriptive icons for all actions
+- Clear visual feedback for interactions
+- Support for screen readers
 
 ## 🚀 Deployment
 
@@ -190,36 +193,29 @@ expo build:ios
 expo build:android
 ```
 
-## 🤝 Contribuții
+## 🤝 Contributions
 
-Acest proiect a fost creat cu scopul educațional și de conștientizare. Contribuțiile sunt binevenite, în special:
+This project was created for educational and awareness purposes. Contributions are welcome, especially:
 
-- Îmbunătățiri de accesibilitate
-- Traduceri în alte limbi
-- Scenarii suplimentare realiste
-- Optimizări de performanță
+- Accessibility improvements
+- Translations to other languages
+- Additional realistic scenarios
+- Performance optimizations
 
-### Ghid pentru Contribuții
-1. Fork repository-ul
-2. Creează o branch pentru feature (`git checkout -b feature/nume-feature`)
-3. Commit modificările (`git commit -m 'Adaugă feature nou'`)
-4. Push la branch (`git push origin feature/nume-feature`)
-5. Deschide un Pull Request
+### Contribution Guide
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/name-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to branch (`git push origin feature/name-feature`)
+5. Open a Pull Request
 
-## 📄 Licență
+## 📄 License
 
-Acest proiect este dezvoltat pentru scopuri educaționale și de conștientizare. Utilizarea comercială necesită permisiune explicită.
+This project is developed for educational and awareness purposes. Commercial use requires explicit permission.
 
-## 🙏 Mulțumiri
+## 🙏 Acknowledgments
 
-Mulțumim tuturor persoanelor care au contribuit cu experiențele lor pentru a face acest proiect posibil și organizațiilor care promovează incluziunea și accesibilitatea.
+Thank you to everyone who contributed their experiences to make this project possible and organizations promoting inclusion and accessibility.
 
-## 📞 Contact și Suport
-
-Pentru întrebări, sugestii sau raportarea problemelor:
-- Deschide un issue în repository
-- Contactează echipa de dezvoltare
 
 ---
-
-**Notă Importantă**: Acest joc abordează teme sensibile. Dacă te simți afectat de conținut, te rugăm să contactezi o linie de ajutor sau să iei o pauză. Sănătatea ta mentală este prioritatea numărul unu.

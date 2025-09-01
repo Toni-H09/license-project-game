@@ -41,42 +41,45 @@ The game engine maintains a **current node** and tracks player state through:
 - **Dynamic path generation** based on current state
 
 ```typescript
-class StoryGraph {
-  private nodes: Map<string, StoryNode>;
-  private edges: Map<string, ChoiceEdge>;
-  private adjacencyList: Map<string, string[]>;
-
-  constructor() {
-    this.nodes = new Map();
-    this.edges = new Map();
-    this.adjacencyList = new Map();
+export class StoryGraphManager {
+  private storyGraph: StoryGraph;
+  private blockedChoices: Set<string> = new Set();
+  
+  constructor(storyGraph: StoryGraph) {
+    this.storyGraph = storyGraph;
+  }
+  
+  getBlockedChoices(): string[] {
+    return Array.from(this.blockedChoices);
   }
 
-  addNode(node: StoryNode): void {
-    this.nodes.set(node.id, node);
-  }
-
-  addEdge(edge: ChoiceEdge): void {
-    this.edges.set(edge.id, edge);
-    if (!this.adjacencyList.has(edge.fromNode)) {
-      this.adjacencyList.set(edge.fromNode, []);
+  blockChoicesFromDecision(choiceId: string): void {
+    const edge = this.findEdgeByChoiceId(choiceId);
+    if (edge) {
+      edge.blocks.forEach(blockedId => this.blockedChoices.add(blockedId));
     }
-    this.adjacencyList.get(edge.fromNode)!.push(edge.toNode);
   }
 
-  getAvailableChoices(currentNodeId: string): Choice[] {
-    const currentNode = this.nodes.get(currentNodeId);
-    if (!currentNode) return [];
-    
-    return currentNode.allChoices.filter(choice => {
-      const edge = this.edges.get(choice.id);
-      return !edge || !this.isBlocked(edge.blocks);
-    });
+  getAvailableEdgesFromNode(nodeId: string): ChoiceEdge[] {
+    const allEdges = this.getAllEdgesFromNode(nodeId);
+    return allEdges.filter(edge => !this.blockedChoices.has(edge.choice.id));
   }
 
-  private isBlocked(blockedIds: string[]): boolean {
-    // Implementation would check if any blocked choices are currently active
-    return false;
+  getAllEdgesFromNode(nodeId: string): ChoiceEdge[] {
+    return Array.from(this.storyGraph.edges.values()).filter(edge => edge.fromNode === nodeId);
+  }
+
+  navigateViaEdge(choiceId: string): string | null {
+    const edge = this.findEdgeByChoiceId(choiceId);
+    return edge ? edge.toNode : null;
+  }
+
+  private findEdgeByChoiceId(choiceId: string): ChoiceEdge | undefined {
+    return Array.from(this.storyGraph.edges.values()).find(edge => edge.choice.id === choiceId);
+  }
+
+  resetBlockedChoices(): void {
+    this.blockedChoices.clear();
   }
 }
 ```

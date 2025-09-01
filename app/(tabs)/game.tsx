@@ -300,14 +300,14 @@ export default function GameScreen() {
 
             <View style={styles.choicesContainer}>
               <TouchableOpacity
-                style={[styles.introspectionChoice, styles.positiveChoice]}
+                style={styles.introspectionChoice}
                 onPress={() => handleIntrospection(true)}
               >
                 <Text style={styles.choiceText}>{introspection.positiveChoice}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.introspectionChoice, styles.negativeChoice]}
+                style={styles.introspectionChoice}
                 onPress={() => handleIntrospection(false)}
               >
                 <Text style={styles.choiceText}>{introspection.negativeChoice}</Text>
@@ -480,16 +480,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     alignItems: 'center',
-  },
-  positiveChoice: {
-    backgroundColor: '#065F46',
+    backgroundColor: 'rgba(59, 130, 246, 0.3)',
     borderWidth: 2,
-    borderColor: '#10B981',
-  },
-  negativeChoice: {
-    backgroundColor: '#7F1D1D',
-    borderWidth: 2,
-    borderColor: '#EF4444',
+    borderColor: '#3B82F6',
   },
   choiceText: {
     fontSize: 18,
