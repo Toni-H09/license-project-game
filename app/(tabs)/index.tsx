@@ -61,11 +61,11 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         <View style={styles.helpSection}>
-          <Text style={styles.helpTitle}>Resurse de Ajutor</Text>
+          <Text style={styles.helpTitle}>Informații Lucrare de Licență</Text>
           <Text style={styles.helpText}>
-            • Telefonul de Suflet: 116 123 (24/7)
-            {'\n'}• Asociația pentru Dizabilități: 021.222.2222
-            {'\n'}• Centrul de Consiliere: 0800.801.200
+            • Autor: Hădade Antonio - Mihai
+            {'\n'}• Titlu: Gamified storytelling for community engagement
+            {'\n'}• Coordonator: Sl.dr.ing. Aurelia CIUPE
           </Text>
         </View>
       </ScrollView>
