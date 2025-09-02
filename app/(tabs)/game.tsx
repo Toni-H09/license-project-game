@@ -3,7 +3,7 @@ import CharacterSelection from '@/components/CharacterSelection';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart, Users, RotateCcw, BarChart2 } from 'lucide-react-native';
 import { StoryGraphManager } from '@/utils/storyGraphManager';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import StoryDisplay from '@/components/StoryDisplay';
 import { trackChoice, trackGameCompletion, trackGameStart, getMetrics, LocalMetrics, trackCharacterSelection } from '@/utils/localMetrics';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
@@ -40,7 +40,8 @@ export default function GameScreen() {
   const [currentPsychologicalState, setCurrentPsychologicalState] = useState('neutral');
   const [isGameComplete, setIsGameComplete] = useState(false);
   const [localMetrics, setLocalMetrics] = useState<LocalMetrics | null>(null);
-  const [hasTrackedCompletion, setHasTrackedCompletion] = useState(false);
+
+  const hasTrackedCompletionRef = useRef(false);
 
   useEffect(() => {
     if (shouldResetGame) {
@@ -137,23 +138,28 @@ export default function GameScreen() {
   const resetGame = useCallback(() => {
     setIsGameComplete(false);
     setGameState(initialGameState);
-    setHasTrackedCompletion(false);
+    hasTrackedCompletionRef.current = false;
     storyManager.resetBlockedChoices();
   }, [storyManager]);
 
   const handleIntrospection = async (isPositive: boolean) => {
     const stateChange = isPositive ? 5 : -5;
     const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + stateChange));
-
+    const newSocialRelations = Math.max(0, Math.min(100, gameState.socialRelations + stateChange));
     const nextScene = gameState.currentScene + 1;
     
-    if (nextScene >= gameData.scenes.length && !hasTrackedCompletion) {
-      const finalGameState = { ...gameState, personalState: newPersonalState };
+    if (nextScene >= gameData.scenes.length) {
+      // This is the last scene, go to ending
+      const finalGameState = { 
+        ...gameState, 
+        personalState: newPersonalState,
+        socialRelations: newSocialRelations 
+      };
       const avgState = (finalGameState.personalState + finalGameState.socialRelations) / 2;
-      
-      setHasTrackedCompletion(true);
-      
-      try {
+
+      if (!hasTrackedCompletionRef.current) {
+        hasTrackedCompletionRef.current = true;
+
         if (avgState >= 70) {
           await trackGameCompletion('positive');
         } else if (avgState >= 40) {
@@ -161,17 +167,25 @@ export default function GameScreen() {
         } else {
           await trackGameCompletion('negative');
         }
-      } catch (error) {
-        console.error('Error tracking game completion:', error);
       }
 
+      // Update the game state with the new values before setting isGameComplete
+      setGameState({
+        ...gameState,
+        personalState: newPersonalState,
+        socialRelations: newSocialRelations,
+      });
+      
+      // Then set game complete state
       setIsGameComplete(true);
     } else if (nextScene < gameData.scenes.length) {
+      // Move to next scene
       setGameState({
         ...gameState,
         currentScene: nextScene,
         currentStep: 0,
         personalState: newPersonalState,
+        socialRelations: newSocialRelations,
         introspectionMode: false,
       });
     }
@@ -248,6 +262,7 @@ export default function GameScreen() {
             onPress={() => {
               setIsGameComplete(false);
               setGameState(initialGameState);
+              hasTrackedCompletionRef.current = false;
               storyManager.resetBlockedChoices();
             }}
           >

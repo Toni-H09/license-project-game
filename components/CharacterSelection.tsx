@@ -14,7 +14,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth >= 768;
 const isLargeScreen = screenWidth >= 1024;
 
-export default function CharacterSelection({ characters, onSelectCharacter }: CharacterSelectionProps) {
+export default function CharacterSelection({ characters, onSelectCharacter }: Readonly<CharacterSelectionProps>) {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [name, setName] = useState('');
 
@@ -93,7 +93,7 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
         </Text>
       </View>
 
-      {selectedCharacter && name.trim() && (
+      {selectedCharacter && name.trim() ? (
         <TouchableOpacity
           style={styles.confirmButton}
           onPress={handleConfirm}
@@ -107,7 +107,7 @@ export default function CharacterSelection({ characters, onSelectCharacter }: Ch
             <Text style={styles.confirmButtonText}>Începe Aventura ca {name.trim()}</Text>
           </LinearGradient>
         </TouchableOpacity>
-      )}
+      ) : null}
 
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>
