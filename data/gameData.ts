@@ -155,121 +155,121 @@ export const gameData = {
       steps: [
         {
           id: STEP_IDS.FACULTY.STEP_1,
-          text: "Este prima ta zi la facultate. Intri în căminul universitar și observi că liftul este defect. Dormitorul tău este la etajul 3.",
-          situation: "Cămin Universitar - Ziua 1",
+          text: "Este prima zi la facultate și ești entuziasmat de noua etapă. Ajungi la facultate și observi că nu există rampă sau ușă de acces în clădire accesibile.",
+          situation: "Prima zi la facultate",
           choices: [
             {
               id: CHOICE_IDS.FACULTY.STEP_1.CHOICE_1,
-              text: "Ceri ajutorul altor studenți să te ducă pe scări",
-              personalStateChange: 5,
-              socialRelationsChange: 10,
-              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_3, CHOICE_IDS.FACULTY.STEP_2.CHOICE_4]
+              text: "Refuzi orice ajutor și pleci acasă",
+              personalStateChange: -5,
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_1, CHOICE_IDS.FACULTY.STEP_2.CHOICE_5]
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_1.CHOICE_2,
-              text: "Aștepți până se repară liftul, chiar dacă întârzii",
-              personalStateChange: -5,
-              socialRelationsChange: 0,
-              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_2, CHOICE_IDS.FACULTY.STEP_2.CHOICE_5]
+              text: "Suni un prieten să te ajute și explici calm cum să procedeze",
+              personalStateChange: 5,
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_2, CHOICE_IDS.FACULTY.STEP_2.CHOICE_4]
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_1.CHOICE_3,
-              text: "Te plângi administrației despre infrastructura inadecvată",
-              personalStateChange: 10,
+              text: "Spui nemulțumirea portarului, fără rezultat",
+              personalStateChange: 0,
               socialRelationsChange: -5,
-              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_1, CHOICE_IDS.FACULTY.STEP_2.CHOICE_3]
+              blocks: [CHOICE_IDS.FACULTY.STEP_2.CHOICE_3, CHOICE_IDS.FACULTY.STEP_2.CHOICE_5]
             }
           ],
         },
         {
           id: STEP_IDS.FACULTY.STEP_2,
-          text: "La prima lecție, profesorul organizează studenții în grupuri pentru un proiect. Observi că majoritatea meselor sunt prea înalte pentru tine.",
-          situation: "Sala de Curs - Prima Lecție",
+          text: "Ai reușit să ajungi în clădire, dar te confrunți cu o ușă greu accesibilă pentru a intra în amfiteatru.",
+          situation: "Acces în amfiteatru",
           choices: [
             {
               id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_1,
-              text: "Te adaptezi și lucrezi cum poți, fără să spui nimic",
-              personalStateChange: -10,
-              socialRelationsChange: 5,
-              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_1, CHOICE_IDS.FACULTY.STEP_3.CHOICE_4]
+              text: "Încerci să o deschizi singur treptat, deși îți va lua mult timp și va fi greu",
+              personalStateChange: 5,
+              socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_4, CHOICE_IDS.FACULTY.STEP_3.CHOICE_5]
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_2,
-              text: "Explici situația profesorului și ceri o soluție",
+              text: "Chemi pe cineva să te ajute",
               personalStateChange: 5,
               socialRelationsChange: 5,
-              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_3, CHOICE_IDS.FACULTY.STEP_3.CHOICE_5]
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_1, CHOICE_IDS.FACULTY.STEP_3.CHOICE_3]
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_3,
-              text: "Pleci din sală, simțindu-te exclus",
-              personalStateChange: -15,
-              socialRelationsChange: -10,
-              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_1, CHOICE_IDS.FACULTY.STEP_3.CHOICE_2]
+              text: "Aștepți până o să vină un profesor",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_2, CHOICE_IDS.FACULTY.STEP_3.CHOICE_4]
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_4,
-              text: "Ceri ajutorul colegilor să îți găsească o soluție",
+              text: "Îți modifici locul și stai la o altă intrare mai ușor accesibilă",
               personalStateChange: 0,
-              socialRelationsChange: 10,
-              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_2, CHOICE_IDS.FACULTY.STEP_3.CHOICE_3]
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_1, CHOICE_IDS.FACULTY.STEP_3.CHOICE_2]
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_2.CHOICE_5,
-              text: "Cauți o masă mai potrivită în altă parte a sălii",
-              personalStateChange: 5,
-              socialRelationsChange: 0,
-              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_5, CHOICE_IDS.FACULTY.STEP_3.CHOICE_4]
+              text: "Renunți să participi la curs",
+              personalStateChange: -5,
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.FACULTY.STEP_3.CHOICE_2, CHOICE_IDS.FACULTY.STEP_3.CHOICE_5]
             }
           ],
         },
         {
           id: STEP_IDS.FACULTY.STEP_3,
-          text: "În pauză, un grup de colegi discută despre o ieșire în oraș la o locație pe care o știi că nu are acces pentru scaune cu rotile.",
-          situation: "Curtea Facultății - Pauza",
+          text: "În pauză, realizezi că nu există baie accesibilă pentru persoanele în scaun cu rotile.",
+          situation: "Probleme cu grupurile sanitare",
           choices: [
             {
               id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_1,
-              text: "Sugerezi o locație alternativă accesibilă",
-              personalStateChange: 10,
-              socialRelationsChange: 10,
+              text: "Mergi la primul magazin cu baie accesibilă",
+              personalStateChange: 5,
+              socialRelationsChange: 5,
               blocks: []
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_2,
-              text: "Refuzi politicos să vii, inventând o scuză",
+              text: "Pleci acasă nervos",
               personalStateChange: -5,
               socialRelationsChange: -5,
               blocks: []
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_3,
-              text: "Nu spui nimic și sperai să nu te invite",
-              personalStateChange: -10,
-              socialRelationsChange: -10,
+              text: "Chemi pe cineva să te ajute",
+              personalStateChange: 0,
+              socialRelationsChange: 5,
               blocks: []
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_4,
-              text: "Accepți să vii, sperând că vei găsi o soluție",
-              personalStateChange: -5,
-              socialRelationsChange: 15,
+              text: "Aștepți să se elibereze o altă baie",
+              personalStateChange: 5,
+              socialRelationsChange: 0,
               blocks: []
             },
             {
               id: CHOICE_IDS.FACULTY.STEP_3.CHOICE_5,
-              text: "Inventezi o scuză medicală pentru a nu participa",
-              personalStateChange: -8,
-              socialRelationsChange: -3,
+              text: "Folosești o soluție improvizată în siguranță",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
               blocks: []
             }
           ],
         },
       ],
       introspection: {
-        text: "Prima săptămână de facultate s-a încheiat. Te gândești la experiențele trăite și la cum te-au afectat.",
-        positiveChoice: "Mă concentrez pe momentele în care am reușit să mă integrez și să-mi fac prieteni",
-        negativeChoice: "Mă gândesc doar la momentele dificile și la cât de diferit sunt",
+        text: "Prima săptămână de facultate s-a încheiat. Te gândești la experiențele trăite și la cum te-au afectat relațiile personale și integrarea în societate.",
+        positiveChoice: "Valoarea mea nu este dată de un cărucior cu rotile",
+        negativeChoice: "Este foarte greu să fiu iubit în această ipostază",
       },
     },
 
@@ -278,121 +278,121 @@ export const gameData = {
       steps: [
         {
           id: STEP_IDS.JOB.STEP_1,
-          text: "Este primul tău job după facultate. Ajungi la birou și realizezi că baia nu este adaptată pentru scaune cu rotile.",
-          situation: "Primul Zi de Lucru",
+          text: "Încerci să găsești un loc de muncă în IT după accident, dar colegii pun la îndoială capacitățile tale.",
+          situation: "Domeniu de aplicare – IT",
           choices: [
             {
               id: CHOICE_IDS.JOB.STEP_1.CHOICE_1,
-              text: "Discuți cu HR-ul despre adaptările necesare",
-              personalStateChange: 10,
+              text: "Le explici ce poți face",
+              personalStateChange: 5,
               socialRelationsChange: 5,
-              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_3, CHOICE_IDS.JOB.STEP_2.CHOICE_5]
+              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_1, CHOICE_IDS.JOB.STEP_2.CHOICE_5]
             },
             {
               id: CHOICE_IDS.JOB.STEP_1.CHOICE_2,
-              text: "Încerci să te descurci singur fără să deranjezi pe nimeni",
+              text: "Ignori și acumulezi durerea în tine",
               personalStateChange: -5,
-              socialRelationsChange: 0,
-              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_1, CHOICE_IDS.JOB.STEP_2.CHOICE_4]
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_1, CHOICE_IDS.JOB.STEP_2.CHOICE_3]
             },
             {
               id: CHOICE_IDS.JOB.STEP_1.CHOICE_3,
-              text: "Te simți o povară și îți pare rău că ai acceptat jobul",
-              personalStateChange: -15,
+              text: "Le răspunzi cu duritate, făcându-i să se simtă rușinați",
+              personalStateChange: 5,
               socialRelationsChange: -5,
-              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_2, CHOICE_IDS.JOB.STEP_2.CHOICE_5]
+              blocks: [CHOICE_IDS.JOB.STEP_2.CHOICE_2, CHOICE_IDS.JOB.STEP_2.CHOICE_4]
             }
           ],
         },
         {
           id: STEP_IDS.JOB.STEP_2,
-          text: "Colegii de echipă organizează o activitate de team building la un loc care pare inaccesibil.",
-          situation: "Team Building",
+          text: "Ți se spune că un task este prea greu pentru tine din cauza condiției tale.",
+          situation: "Task dificil",
           choices: [
             {
               id: CHOICE_IDS.JOB.STEP_2.CHOICE_1,
-              text: "Propui o activitate alternativă inclusivă",
-              personalStateChange: 15,
-              socialRelationsChange: 15,
-              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_2, CHOICE_IDS.JOB.STEP_3.CHOICE_4]
+              text: "Încerci să le demonstrezi că poți să-l faci",
+              personalStateChange: 5,
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_1, CHOICE_IDS.JOB.STEP_3.CHOICE_2]
             },
             {
               id: CHOICE_IDS.JOB.STEP_2.CHOICE_2,
-              text: "Participi oricum, chiar dacă va fi dificil",
+              text: "Ai răbdare și nu renunți până când reușești",
               personalStateChange: 5,
-              socialRelationsChange: 10,
+              socialRelationsChange: 0,
               blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_1, CHOICE_IDS.JOB.STEP_3.CHOICE_3]
             },
             {
               id: CHOICE_IDS.JOB.STEP_2.CHOICE_3,
-              text: "Nu participi și lucrezi de acasă",
-              personalStateChange: -10,
-              socialRelationsChange: -15,
-              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_5, CHOICE_IDS.JOB.STEP_3.CHOICE_4]
+              text: "Renunți",
+              personalStateChange: -5,
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_2, CHOICE_IDS.JOB.STEP_3.CHOICE_3]
             },
             {
               id: CHOICE_IDS.JOB.STEP_2.CHOICE_4,
-              text: "Ceri organizatorilor să găsească o soluție pentru tine",
-              personalStateChange: 5,
+              text: "Ceri modificarea task-ului sau ajutor suplimentar",
+              personalStateChange: 0,
               socialRelationsChange: 5,
-              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_4, CHOICE_IDS.JOB.STEP_3.CHOICE_2]
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_3, CHOICE_IDS.JOB.STEP_3.CHOICE_5]
             },
             {
               id: CHOICE_IDS.JOB.STEP_2.CHOICE_5,
-              text: "Sugerezi ca activitatea să aibă și o componentă online",
-              personalStateChange: 10,
-              socialRelationsChange: 8,
-              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_3, CHOICE_IDS.JOB.STEP_3.CHOICE_5]
+              text: "Îi întrebi pe alți colegi cum au reușit ei să facă task-uri similare",
+              personalStateChange: 5,
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.JOB.STEP_3.CHOICE_3, CHOICE_IDS.JOB.STEP_3.CHOICE_4]
             }
           ],
         },
         {
           id: STEP_IDS.JOB.STEP_3,
-          text: "Un coleg face remarci nepotrivite despre dizabilitatea ta, aparent în glumă, în fața altor colegi.",
-          situation: "Birou - Comentarii Nepotrivite",
+          text: "În interacțiunea cu clienții, observi că mulți te privesc cu compasiune exagerată sau îți plâng de milă.",
+          situation: "Interacțiunea cu clienții",
           choices: [
             {
               id: CHOICE_IDS.JOB.STEP_3.CHOICE_1,
-              text: "Îi explici direct de ce comentariile sunt nepotrivite",
-              personalStateChange: 10,
-              socialRelationsChange: 5,
-              blocks: []
-            },
-            {
-              id: CHOICE_IDS.JOB.STEP_3.CHOICE_2,
-              text: "Râzi împreună, deși te simți rănit",
-              personalStateChange: -10,
-              socialRelationsChange: 5,
-              blocks: []
-            },
-            {
-              id: CHOICE_IDS.JOB.STEP_3.CHOICE_3,
-              text: "Raportezi incidentul la HR",
+              text: "Le spui că ești capabil și nu vrei mila lor",
               personalStateChange: 5,
-              socialRelationsChange: -10,
-              blocks: []
-            },
-            {
-              id: CHOICE_IDS.JOB.STEP_3.CHOICE_4,
-              text: "Rămâi tăcut dar îți exprimi dezaprobarea prin limbajul corpului",
-              personalStateChange: -5,
               socialRelationsChange: 0,
               blocks: []
             },
             {
-              id: CHOICE_IDS.JOB.STEP_3.CHOICE_5,
-              text: "Îl confrunți public în fața tuturor colegilor",
-              personalStateChange: 15,
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_2,
+              text: "Ignori și acumulezi durerea în tine",
+              personalStateChange: -5,
               socialRelationsChange: -5,
+              blocks: []
+            },
+            {
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_3,
+              text: "Renunți și pleci de la muncă",
+              personalStateChange: -5,
+              socialRelationsChange: -5,
+              blocks: []
+            },
+            {
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_4,
+              text: "Încerci să explici cu răbdare că poți face job-ul",
+              personalStateChange: 5,
+              socialRelationsChange: 5,
+              blocks: []
+            },
+            {
+              id: CHOICE_IDS.JOB.STEP_3.CHOICE_5,
+              text: "Râzi și iei situația cu umor pentru a detensiona atmosfera",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
               blocks: []
             }
           ],
         },
       ],
       introspection: {
-        text: "După câteva luni la serviciu, reflectezi asupra experienței tale profesionale și a relațiilor cu colegii.",
-        positiveChoice: "Sunt mândru de contribuțiile mele și de progresul făcut în carieră",
-        negativeChoice: "Simt că mereu voi fi tratat diferit, indiferent de performanțele mele",
+        text: "După câteva luni la serviciu, reflectezi asupra capacităților tale profesionale și nevoii de sprijin.",
+        positiveChoice: "Faptul că nu mă pot deplasa nu înseamnă că nu am alte capabilități",
+        negativeChoice: "Nu am abilități pentru a putea munci",
       },
     },
 
@@ -401,121 +401,121 @@ export const gameData = {
       steps: [
         {
           id: STEP_IDS.HOUSING.STEP_1,
-          text: "Cauți un apartament să închiriezi. Proprietarul pare reticent când vede scaunul cu rotile.",
-          situation: "Căutarea Apartamentului",
+          text: "Ești singur acasă și te confrunți cu dificultăți fizice majore. Ai căzut din pat și nu poți ajunge la cărucior.",
+          situation: "Cădere din pat",
           choices: [
             {
               id: CHOICE_IDS.HOUSING.STEP_1.CHOICE_1,
-              text: "Îi explici drepturile tale și îl asiguri că vei avea grijă",
-              personalStateChange: 10,
-              socialRelationsChange: 5,
-              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_3, CHOICE_IDS.HOUSING.STEP_2.CHOICE_5]
+              text: "Încerci să ajungi la telefon și depui mult efort",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_2, CHOICE_IDS.HOUSING.STEP_2.CHOICE_5]
             },
             {
               id: CHOICE_IDS.HOUSING.STEP_1.CHOICE_2,
-              text: "Oferi să plătești o garanție suplimentară",
-              personalStateChange: -5,
-              socialRelationsChange: 10,
-              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_1, CHOICE_IDS.HOUSING.STEP_2.CHOICE_4]
+              text: "Suni un prieten să te ajute",
+              personalStateChange: 5,
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_1, CHOICE_IDS.HOUSING.STEP_2.CHOICE_2]
             },
             {
               id: CHOICE_IDS.HOUSING.STEP_1.CHOICE_3,
-              text: "Pleci în tăcere și continui căutarea",
-              personalStateChange: -10,
+              text: "Încerci să ridici singur scaunul, chiar dacă e foarte greu și te va extenua",
+              personalStateChange: -5,
               socialRelationsChange: -5,
-              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_2, CHOICE_IDS.HOUSING.STEP_2.CHOICE_1]
+              blocks: [CHOICE_IDS.HOUSING.STEP_2.CHOICE_3, CHOICE_IDS.HOUSING.STEP_2.CHOICE_4]
             }
           ],
         },
         {
           id: STEP_IDS.HOUSING.STEP_2,
-          text: "Vecinii organizează o întâlnire în curtea comună pentru a discuta probleme ale blocului. Locul de întâlnire nu este accesibil.",
-          situation: "Întâlnirea Vecinilor",
+          text: "Frigiderul este greu accesibil și ai nevoie să iei mâncare.",
+          situation: "Acces mâncare",
           choices: [
             {
               id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_1,
-              text: "Sugerezi să mutați întâlnirea într-un loc accesibil",
-              personalStateChange: 15,
-              socialRelationsChange: 10,
-              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_3, CHOICE_IDS.HOUSING.STEP_3.CHOICE_2]
-            },
-            {
-              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_2,
-              text: "Ceri să te țină la curent cu ce s-a discutât",
-              personalStateChange: 0,
+              text: "Folosești un clește / alt ajutor și ceri sprijin prietenilor",
+              personalStateChange: 5,
               socialRelationsChange: 5,
-              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_1, CHOICE_IDS.HOUSING.STEP_3.CHOICE_4]
-            },
-            {
-              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_3,
-              text: "Nu te implici deloc în problemele comunității",
-              personalStateChange: -10,
-              socialRelationsChange: -15,
               blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_1, CHOICE_IDS.HOUSING.STEP_3.CHOICE_5]
             },
             {
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_2,
+              text: "Încerci singur și te frustrezi",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_2, CHOICE_IDS.HOUSING.STEP_3.CHOICE_4]
+            },
+            {
+              id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_3,
+              text: "Renunți și rămâi fără mâncare pentru moment",
+              personalStateChange: -5,
+              socialRelationsChange: -5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_2, CHOICE_IDS.HOUSING.STEP_3.CHOICE_3]
+            },
+            {
               id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_4,
-              text: "Propui să organizezi tu întâlnirea într-un loc accesibil",
-              personalStateChange: 12,
-              socialRelationsChange: 15,
-              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_3, CHOICE_IDS.HOUSING.STEP_3.CHOICE_2]
+              text: "Cauți alternative mai accesibile",
+              personalStateChange: 0,
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_4, CHOICE_IDS.HOUSING.STEP_3.CHOICE_5]
             },
             {
               id: CHOICE_IDS.HOUSING.STEP_2.CHOICE_5,
-              text: "Te plângi administrației despre lipsa de accesibilitate",
-              personalStateChange: 8,
-              socialRelationsChange: -5,
-              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_2, CHOICE_IDS.HOUSING.STEP_3.CHOICE_5]
+              text: "Ceri ajutor la livrare sau de la vecin",
+              personalStateChange: 0,
+              socialRelationsChange: 5,
+              blocks: [CHOICE_IDS.HOUSING.STEP_3.CHOICE_3, CHOICE_IDS.HOUSING.STEP_3.CHOICE_5]
             }
           ],
         },
         {
           id: STEP_IDS.HOUSING.STEP_3,
-          text: "O persoană dragă îți propune să mergeți într-o călătorie împreună, dar îți exprimă îngrijorarea legată de planificarea necesară pentru nevoile tale.",
-          situation: "Planuri de Călătorie",
+          text: "Este o zi toridă și geamurile sunt greu accesibile pentru tine.",
+          situation: "Ventilare",
           choices: [
             {
               id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_1,
-              text: "Propui să planificați împreună călătoria",
-              personalStateChange: 15,
-              socialRelationsChange: 15,
-              blocks: []
-            },
-            {
-              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_2,
-              text: "Îți asumi toată responsabilitatea planificării",
-              personalStateChange: -5,
+              text: "Ceri ajutorul unui prieten sau vecin",
+              personalStateChange: 5,
               socialRelationsChange: 5,
               blocks: []
             },
             {
+              id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_2,
+              text: "Încerci singur și te frustrezi",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
+              blocks: []
+            },
+            {
               id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_3,
-              text: "Refuzi călătoria pentru a nu crea probleme",
-              personalStateChange: -15,
-              socialRelationsChange: -10,
+              text: "Nu faci nimic, te adaptezi",
+              personalStateChange: -5,
+              socialRelationsChange: -5,
               blocks: []
             },
             {
               id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_4,
-              text: "Cercetezi opțiuni accesibile și prezinți alternative",
-              personalStateChange: 10,
-              socialRelationsChange: 12,
+              text: "Folosești ventilatoare sau aer condiționat",
+              personalStateChange: 0,
+              socialRelationsChange: 0,
               blocks: []
             },
             {
               id: CHOICE_IDS.HOUSING.STEP_3.CHOICE_5,
-              text: "Sugerezi o călătorie mai scurtă și mai accesibilă",
-              personalStateChange: 5,
-              socialRelationsChange: 8,
+              text: "Încerci să improvizezi un sistem de deschidere accesibil",
+              personalStateChange: 0,
+              socialRelationsChange: 5,
               blocks: []
             }
           ],
         },
       ],
       introspection: {
-        text: "Privind înapoi la experiențele tale de viață independentă, îți evaluezi parcursul și relațiile construite.",
-        positiveChoice: "Am demonstrat că pot trăi independent și am construit relații valoroase",
-        negativeChoice: "Viața mea va fi mereu o luptă, iar eu voi fi mereu o povară pentru alții",
+        text: "Privind înapoi la experiențele tale de viață independentă, reflectezi asupra sprijinului primit de la alții.",
+        positiveChoice: "Da, întotdeauna vor exista oameni de încredere",
+        negativeChoice: "Am încercat și nu a mers, poate ar trebui să renunț",
       },
     },
   ],
@@ -527,11 +527,11 @@ export const gameData = {
     },
     neutral: {
       title: "Echilibru și Acceptare",
-      text: "Ai găsit un echilibru în viață, cu momente bune și rele. Deși încă mai întâmpini provocări, ai dezvoltat strategii de adaptare și ai construit o rețea de sprijin solidă. Continui să crești și să înveți, acceptând că viața are ups și downs pentru toată lumea.",
+      text: "Ai găsit un echilibru în viață, cu momente bune și rele. Deși încă mai întâmpini provocări, ai dezvoltat strategii de adaptare și ai construit o rețea de sprijin solidă. Continui să crești și să înveți, acceptând că viața are suișuri și coborâșuri pentru toată lumea.",
     },
     negative: {
       title: "Reflecție și Speranță",
-      text: "Călătoria ta a fost dificilă și ai trecut prin momente întunecate. Important este să îți amintești că nu ești singur și că există întotdeauna ajutor disponibil. Fiecare zi nouă oferă o șansă de schimbare și îmbunătățire. Te rugăm să contactezi o linie de ajutor dacă ai nevoie de sprijin: 116 123 (Telefonul de Suflet).",
+      text: "Călătoria ta a fost dificilă și ai trecut prin momente întunecate. Important este să îți amintești că nu ești singur și că există întotdeauna ajutor disponibil. Fiecare zi nouă oferă o șansă de schimbare și îmbunătățire. Te rugăm să contactezi o linie de ajutor dacă ai nevoie de sprijin.",
     },
   },
 };

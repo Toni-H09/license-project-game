@@ -142,7 +142,7 @@ export default function GameScreen() {
   }, [storyManager]);
 
   const handleIntrospection = async (isPositive: boolean) => {
-    const stateChange = isPositive ? 10 : -10;
+    const stateChange = isPositive ? 5 : -5;
     const newPersonalState = Math.max(0, Math.min(100, gameState.personalState + stateChange));
 
     const nextScene = gameState.currentScene + 1;
